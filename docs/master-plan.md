@@ -96,35 +96,35 @@
 
 ### Task 1.1 — Định Nghĩa Drizzle Schema `M`
 
-- [ ] 1.1.1 Bảng `members` (role: ADMIN | SUBSCRIBER | CARD_OWNER) — [model-erd.md](model-erd.md) §2.1.
+- [x] 1.1.1 Bảng `members` (role: ADMIN | SUBSCRIBER | CARD_OWNER) — [model-erd.md](model-erd.md) §2.1.
 
-- [ ] 1.1.2 Bảng `payment_cards` (chỉ `card_label` + `last_four`, **không** PAN/CVV — tuân thủ BR-09 trong [business-rules.md](business-rules.md)).
-- [ ] 1.1.3 Bảng `subscriptions` (status, billing_cycle, confidence_score, is_must_keep...).
-- [ ] 1.1.4 Bảng `alerts` (alert_type: SOFT_T3 | RED_T24, response: PENDING|KEEP|KILL).
-- [ ] 1.1.5 Bảng `parsing_logs` (status: SUCCESS|LOW_CONFIDENCE|FAILED).
-- [ ] 1.1.6 Review chéo schema với [model-erd.md](model-erd.md) để đảm bảo khớp 100% kiểu dữ liệu & ràng buộc FK.
+- [x] 1.1.2 Bảng `payment_cards` (chỉ `card_label` + `last_four`, **không** PAN/CVV — tuân thủ BR-09 trong [business-rules.md](business-rules.md)).
+- [x] 1.1.3 Bảng `subscriptions` (status, billing_cycle, confidence_score, is_must_keep...).
+- [x] 1.1.4 Bảng `alerts` (alert_type: SOFT_T3 | RED_T24, response: PENDING|KEEP|KILL).
+- [x] 1.1.5 Bảng `parsing_logs` (status: SUCCESS|LOW_CONFIDENCE|FAILED).
+- [x] 1.1.6 Review chéo schema với [model-erd.md](model-erd.md) để đảm bảo khớp 100% kiểu dữ liệu & ràng buộc FK.
 
 ### Task 1.2 — Migrations `S`
 
-- [ ] 1.2.1 `drizzle-kit generate` sinh file SQL migration.
+- [x] 1.2.1 `drizzle-kit generate` sinh file SQL migration.
 
-- [ ] 1.2.2 Áp dụng migration local: `wrangler d1 migrations apply subsentry-db --local`.
-- [ ] 1.2.3 Áp dụng migration remote (môi trường staging trước, production sau).
-- [ ] 1.2.4 Viết script kiểm tra migration idempotent (chạy lại không lỗi).
+- [x] 1.2.2 Áp dụng migration local: `wrangler d1 migrations apply subsentry-db --local`.
+- [x] 1.2.3 Áp dụng migration remote (môi trường staging trước, production sau).
+- [x] 1.2.4 Viết script kiểm tra migration idempotent (chạy lại không lỗi).
 
 ### Task 1.3 — Seed Data Cho Test `S`
 
-- [ ] 1.3.1 Seed 2-3 `members` mẫu (1 ADMIN, 2 SUBSCRIBER).
+- [x] 1.3.1 Seed 2-3 `members` mẫu (1 ADMIN, 2 SUBSCRIBER).
 
-- [ ] 1.3.2 Seed 1-2 `payment_cards` mẫu.
-- [ ] 1.3.3 Seed vài `subscriptions` ở các trạng thái khác nhau (TRIAL, ACTIVE, PENDING_KILL, KILLED) để dùng cho test Cron.
+- [x] 1.3.2 Seed 1-2 `payment_cards` mẫu.
+- [x] 1.3.3 Seed vài `subscriptions` ở các trạng thái khác nhau (TRIAL, ACTIVE, PENDING_KILL, KILLED) để dùng cho test Cron.
 
 ### Task 1.4 — Unit Test Ràng Buộc Dữ Liệu `S`
 
-- [ ] 1.4.1 Test FK constraint (không cho tạo subscription với `subscriber_id` không tồn tại).
+- [x] 1.4.1 Test FK constraint (không cho tạo subscription với `subscriber_id` không tồn tại).
 
-- [ ] 1.4.2 Test enum constraint cho `status`, `role`, `billing_cycle`.
-- [ ] 1.4.3 Test default values (`is_must_keep = false`, `currency = 'VND'`).
+- [x] 1.4.2 Test enum constraint cho `status`, `role`, `billing_cycle`.
+- [x] 1.4.3 Test default values (`is_must_keep = false`, `currency = 'VND'`).
 
 **✅ DoD Epic 1:** Toàn bộ 5 bảng có migration chạy sạch trên local & remote; seed script chạy lặp lại an toàn; test constraint pass 100%.
 

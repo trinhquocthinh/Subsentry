@@ -2,6 +2,7 @@ name = "subsentry-backend"
 main = "src/index.ts"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+account_id = "aa2932fffb49ccedc1fe6b2400fc2901"
 
 [triggers]
 crons = ["0 1 * * *"]
@@ -11,3 +12,4 @@ crons = ["0 1 * * *"]
 binding = "DB"
 database_name = "subsentry-db"
 database_id = "f84d61b2-d23a-4362-abfb-7510113b5326"
+migrations_dir = "drizzle"
