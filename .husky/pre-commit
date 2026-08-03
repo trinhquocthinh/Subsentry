@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🛡️ Subsentry Quality Gate: Đang định dạng mã nguồn..."
+yarn format
+
+echo "🛡️ Subsentry Quality Gate: Đang kiểm tra cú pháp (ESLint)..."
+yarn lint || exit 1
+
+echo "🛡️ Subsentry Quality Gate: Đang kiểm tra mã trùng lặp (jscpd)..."
+yarn duplicate:check || exit 1
+
+echo "🛡️ Subsentry Quality Gate: Đang quét mã chết (Knip)..."
+yarn deadcode:check || exit 1
+
+echo "🛡️ Subsentry Quality Gate: Đang chạy Unit Tests (Vitest)..."
+yarn test || exit 1
+
+echo "✅ Đạt chuẩn! Cho phép commit."

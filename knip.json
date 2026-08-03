@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": ["vitest.config.ts"]
+    },
+    "apps/backend": {
+      "entry": ["src/index.ts"]
+    },
+    "apps/frontend": {
+      "entry": ["src/main.tsx"]
+    }
+  }
+}
