@@ -26,7 +26,7 @@ graph TB
 
     %% External Systems
     MERCHANT[Dịch vụ bên thứ ba<br>Netflix, Spotify, Apple...]:::extSystem
-    ZALO_FB[Mạng xã hội<br>Zalo OA & Facebook Messenger]:::extSystem
+    ZALO_TG[Mạng xã hội<br>Zalo OA & Telegram Bot]:::extSystem
     EMAIL_SRV[Hệ thống Email<br>Gmail cá nhân thành viên]:::extSystem
 
     %% Interactions
@@ -35,12 +35,12 @@ graph TB
     MERCHANT -->|3. Gửi biên lai/Hóa đơn| EMAIL_SRV
 
     EMAIL_SRV -->|4. Tự động chuyển tiếp| SYS
-    SUB -->|5. Chụp hóa đơn / gửi SMS| ZALO_FB
-    ZALO_FB -->|6. Đẩy tin nhắn Webhook| SYS
+    SUB -->|5. Chụp hóa đơn / gửi SMS| ZALO_TG
+    ZALO_TG -->|6. Đẩy tin nhắn Webhook| SYS
 
-    SYS -->|7. Gửi cảnh báo đa tầng| ZALO_FB
-    ZALO_FB -->|8. Nhắc nhở riêng tư| SUB
-    ZALO_FB -->|9. Báo động khẩn cấp| OWNER
+    SYS -->|7. Gửi cảnh báo đa tầng| ZALO_TG
+    ZALO_TG -->|8. Nhắc nhở riêng tư| SUB
+    ZALO_TG -->|9. Báo động khẩn cấp| OWNER
 ```
 
 ---
@@ -65,7 +65,7 @@ graph TB
 
         %% Frontend Containers
         ZMA[Zalo Mini App<br>React SPA]:::container
-        MWA[Messenger Webview<br>React SPA]:::container
+        TGA[Telegram Mini App<br>React SPA]:::container
         CF_PAGES[Cloudflare Pages<br>Static Hosting & CDN]:::container
 
         %% Mail Router
@@ -82,20 +82,20 @@ graph TB
     OPENAI[OpenAI API<br>GPT-4o-mini Parser]:::external
     SHEETS[Google Sheets API<br>Bảng tính dự phòng]:::external
     ZALO_API[Zalo OA API]:::external
-    FB_API[Facebook Graph API]:::external
+    TG_API[Telegram Bot API]:::external
 
     %% Frontend Deploy Connection
     CF_PAGES -.->|Phục vụ Static Files| ZMA
-    CF_PAGES -.->|Phục vụ Static Files| MWA
+    CF_PAGES -.->|Phục vụ Static Files| TGA
 
     %% Input Flows
     SUB -->|1. Forward Email Hóa Đơn| MAIL_ROUT
     SUB -->|2. Gửi ảnh/SMS qua chat| ZALO_API
-    SUB -->|2. Gửi ảnh/SMS qua chat| FB_API
+    SUB -->|2. Gửi ảnh/SMS qua chat| TG_API
 
     MAIL_ROUT -->|3. Route Email dữ liệu thô| WORKER
     ZALO_API -->|4. Webhook Event| WORKER
-    FB_API -->|4. Webhook Event| WORKER
+    TG_API -->|4. Webhook Event| WORKER
 
     %% Worker Internal Processing & DB
     WORKER -->|5. Lưu trữ & Truy vấn dữ liệu| D1_DB
@@ -104,36 +104,36 @@ graph TB
 
     %% Interactive Dashboard flows
     SUB -->|8. Quản lý trực quan| ZMA
-    OWNER -->|8. Xem danh sách / Thêm thẻ| MWA
+    OWNER -->|8. Xem danh sách / Thêm thẻ| TGA
     ZMA -->|9. Gọi API HTTP POST/GET| WORKER
-    MWA -->|9. Gọi API HTTP POST/GET| WORKER
+    TGA -->|9. Gọi API HTTP POST/GET| WORKER
 
     %% Notifications out
     WORKER -->|10. Gửi tin nhắn / Nút bấm| ZALO_API
-    WORKER -->|10. Gửi tin nhắn / Nút bấm| FB_API
+    WORKER -->|10. Gửi tin nhắn / Nút bấm| TG_API
     ZALO_API -->|11. Nhắc nhở| SUB
-    FB_API -->|11. Báo động nhóm| OWNER
+    TG_API -->|11. Báo động nhóm| OWNER
 ```
 
 ---
 
 #### 3. Mô Tả Chi Tiết Nhiệm Vụ Các Container (Container Specifications)
 
-##### 3.1 Frontend: Zalo Mini App / Messenger Webview (React SPA)
+##### 3.1 Frontend: Zalo Mini App / Telegram Mini App (React SPA)
 
 - **Công nghệ:** React v18.3.x, TypeScript, Tailwind CSS, Vite v5.x.
 - **Lưu trữ (Hosting):** Cloudflare Pages (Serverless Hosting).
 - **Mô tả nhiệm vụ:**
   - Cung cấp giao diện Dashboard tối giản, hiển thị trực quan biểu đồ hình tròn phân phối chi tiêu, danh sách các gói đăng ký đang hoạt động, danh sách thẻ thanh toán và đồng hồ đếm ngược ngày gia hạn (`Next Billing Date`).
   - Cung cấp giao diện tương tác cho phép cấu hình nhanh: Gán chủ thẻ, chỉnh sửa số tiền, đổi ngày gia hạn thủ công mà không cần dùng câu lệnh chat.
-  - Tích hợp sâu thông qua Zalo SDK (Zalo Mini App) và Facebook SDK (Messenger Webview Extension) để lấy thông tin `User ID` tự động mà không bắt người dùng đăng nhập lại.
+  - Tích hợp sâu thông qua Zalo SDK (Zalo Mini App) và Telegram Web App SDK (`window.Telegram.WebApp`) để lấy thông tin `User ID` tự động mà không bắt người dùng đăng nhập lại.
 
 ##### 3.2 Backend: Cloudflare Workers (Hono API)
 
 - **Công nghệ:** TypeScript, Hono Framework v4.5.x, Drizzle ORM v0.32.x.
 - **Mô tả nhiệm vụ:**
   - Làm xương sống xử lý toàn bộ logic nghiệp vụ (Core Domain Logic).
-  - Cung cấp các cổng API (Endpoints) tiếp nhận Webhook từ Zalo OA, Facebook Messenger và hệ thống Mail.
+  - Cung cấp các cổng API (Endpoints) tiếp nhận Webhook từ Zalo OA, Telegram Bot và hệ thống Mail.
   - Thực hiện cơ chế kiểm soát chất lượng dữ liệu: Đọc dữ liệu, gọi API OpenAI GPT-4o-mini để bóc tách hóa đơn, kiểm tra ngưỡng tin cậy (`Confidence Score >= 0.85`), xử lý ghi nhận D1 Database.
   - Vận hành bộ lập lịch (Cron Triggers) để quét D1 hàng ngày lúc 08:00 sáng, tự động tính toán thời gian `T-3` và `T-24h` để gửi tin nhắn cảnh báo đa tầng tới đúng thành viên gia đình.
 

@@ -3,18 +3,18 @@
 **Tài Liệu Quy Tắc Nghiệp Vụ - Phiên Bản Gia Đình (Dưới 10 Thành Viên)**
 _Vigilant Defense for Your Digital Wallet — Zero-Friction Proactive Defense_
 
-| Metadata             | Details                     |
-| -------------------- | --------------------------- |
-| **Document Version** | 1.0                         |
-| **Status**           | Approved                    |
-| **Primary Channels** | Zalo OA, Facebook Messenger |
+| Metadata             | Details               |
+| -------------------- | --------------------- |
+| **Document Version** | 1.0                   |
+| **Status**           | Approved              |
+| **Primary Channels** | Zalo OA, Telegram Bot |
 
 ---
 
 ### 1. Triết Lý Vận Hành (Core Philosophy)
 
 Dự án **Subsentry (QoL)** vận hành dựa trên nguyên tắc **Hợp tác chủ động (Cooperative Safety Net)**. Mục tiêu không phải là kiểm soát một chiều, mà là xây dựng mạng lưới an toàn giúp bảo vệ dòng tiền của cả gia đình [1, 2], tránh lãng phí do trùng lặp gói dịch vụ, và ngăn chặn triệt để "bẫy dùng thử" [3].
-Hệ thống được thiết kế tối giản để chạy trên hạ tầng **Serverless (Cloudflare Workers + D1 Database + Zalo OA/Facebook Messenger)** với chi phí vận hành tiệm cận $0 [2].
+Hệ thống được thiết kế tối giản để chạy trên hạ tầng **Serverless (Cloudflare Workers + D1 Database + Zalo OA/Telegram Bot)** với chi phí vận hành tiệm cận $0 [2].
 
 ---
 
@@ -25,7 +25,7 @@ Hệ thống được thiết kế tối giản để chạy trên hạ tầng *
 - **Quy tắc:** Hệ thống tuyệt đối **không** yêu cầu quyền truy cập toàn bộ hòm thư cá nhân hoặc tin nhắn SMS riêng tư của các thành viên gia đình [9].
 - **Cơ chế thực thi:**
   - **Email:** Thành viên cấu hình bộ lọc tự động chuyển tiếp (Auto-forward) trên Gmail cá nhân [9]. Chỉ những email từ các Merchant cụ thể (Apple, Google, Netflix...) hoặc chứa từ khóa liên quan (subscription, trial, invoice, đăng ký) mới được chuyển tiếp tới hòm thư chung `subs@yourfamily.com` của Cloudflare Email Routing.
-  - **SMS/Biến động số dư:** Thành viên chủ động sao chép tin nhắn hoặc chụp ảnh màn hình biên lai gửi vào **Zalo Bot (Zalo OA)** hoặc **Facebook Messenger Bot** chung của gia đình [10].
+  - **SMS/Biến động số dư:** Thành viên chủ động sao chép tin nhắn hoặc chụp ảnh màn hình biên lai gửi vào **Zalo Bot (Zalo OA)** hoặc **Telegram Bot** chung của gia đình [10].
 
 #### 📌 BR-02: Phân quyền dữ liệu nhóm (Family Data Sharing)
 
@@ -51,16 +51,16 @@ Mỗi dịch vụ đăng ký (Subscription/Trial) được lưu trữ trong Clou
 
 Để bảo vệ dòng tiền hiệu quả mà không gây phiền hà (Alert Fatigue), quy trình nhắc nhở được phân tầng dựa trên thời gian đếm ngược tới ngày gia hạn tiếp theo (Next Billing Date) [8]:
 
-| Mốc thời gian | Loại cảnh báo                 | Đối tượng nhận                            | Kênh nhận                                 | Hành động yêu cầu                          |
-| ------------- | ----------------------------- | ----------------------------------------- | ----------------------------------------- | ------------------------------------------ |
-| **T-3 ngày**  | **Soft Alert** (Nhắc nhở nhẹ) | **Subscriber** (Người đăng ký)            | Zalo OA / Messenger Chat (Private)        | Xác nhận: Keep (Giữ) hoặc Kill (Hủy) [10]  |
-| **T-24 giờ**  | **Red Alert** (Báo động đỏ)   | **Subscriber** + **Card Owner** (Chủ thẻ) | Nhóm Chat Gia Đình (Zalo/Messenger Group) | Xác nhận khẩn cấp / Khóa thẻ tạm thời [10] |
+| Mốc thời gian | Loại cảnh báo                 | Đối tượng nhận                            | Kênh nhận                                | Hành động yêu cầu                          |
+| ------------- | ----------------------------- | ----------------------------------------- | ---------------------------------------- | ------------------------------------------ |
+| **T-3 ngày**  | **Soft Alert** (Nhắc nhở nhẹ) | **Subscriber** (Người đăng ký)            | Zalo OA / Telegram Chat (Private)        | Xác nhận: Keep (Giữ) hoặc Kill (Hủy) [10]  |
+| **T-24 giờ**  | **Red Alert** (Báo động đỏ)   | **Subscriber** + **Card Owner** (Chủ thẻ) | Nhóm Chat Gia Đình (Zalo/Telegram Group) | Xác nhận khẩn cấp / Khóa thẻ tạm thời [10] |
 
 #### 📌 BR-04: Quy tắc leo thang Red Alert (Escalation Rule)
 
 - Nếu ở mốc **T-3 ngày (Soft Alert)**, Subscriber chọn **Keep**: Hệ thống cập nhật trạng thái gia hạn tiếp theo và tắt cảnh báo chu kỳ này.
 - Nếu ở mốc **T-3 ngày**, Subscriber chọn **Kill**: Hệ thống chuyển trạng thái sang **Pending Kill**, cung cấp Link Hủy trực tiếp [10].
-- Nếu Subscriber **không phản hồi** sau 48 giờ (tức là chạm mốc **T-24h**): Hệ thống tự động kích hoạt **Red Alert** gửi thẳng vào nhóm chat chung của gia đình trên Zalo/Messenger, đồng thời tag **Card Owner** (Bố/Mẹ) kèm theo thông tin chi tiết: _"Thẻ [Techcombank - Bố] sắp bị trừ [250,000 VNĐ] cho dịch vụ [Canva] đăng ký bởi [Con]. Vui lòng xác nhận hoặc chủ động khóa thẻ trên app ngân hàng."_
+- Nếu Subscriber **không phản hồi** sau 48 giờ (tức là chạm mốc **T-24h**): Hệ thống tự động kích hoạt **Red Alert** gửi thẳng vào nhóm chat chung của gia đình trên Zalo/Telegram, đồng thời tag **Card Owner** (Bố/Mẹ) kèm theo thông tin chi tiết: _"Thẻ [Techcombank - Bố] sắp bị trừ [250,000 VNĐ] cho dịch vụ [Canva] đăng ký bởi [Con]. Vui lòng xác nhận hoặc chủ động khóa thẻ trên app ngân hàng."_
 
 #### 📌 BR-05: Ngoại lệ cho dịch vụ thiết yếu (Must-Keep Exemption)
 
@@ -73,7 +73,7 @@ Mỗi dịch vụ đăng ký (Subscription/Trial) được lưu trữ trong Clou
 #### 📌 BR-06: Bắt buộc định danh chủ thể thanh toán
 
 - Mỗi thực thể Subscription được tạo ra bắt buộc phải liên kết với:
-  1. **Subscriber (Zalo User ID hoặc Messenger PSID):** Thành viên trực tiếp sử dụng dịch vụ.
+  1. **Subscriber (Zalo User ID hoặc Telegram Chat ID):** Thành viên trực tiếp sử dụng dịch vụ.
   2. **Card Owner (Tên nhãn thẻ):** Người đứng tên thẻ thanh toán thực tế (ví dụ: "Visa Techcombank - Bố").
 - **Mục đích:** Đảm bảo khi có sự cố trừ tiền ngoài ý muốn, chủ thẻ có thể nhanh chóng định danh dòng tiền và thực hiện khóa thẻ khẩn cấp trên app ngân hàng nếu cần thiết.
 
@@ -83,7 +83,7 @@ Mỗi dịch vụ đăng ký (Subscription/Trial) được lưu trữ trong Clou
 
 #### 📌 BR-07: Xác thực thông tin đầu vào (Parsing Validation)
 
-Khi Cloudflare Worker nhận dữ liệu thô (Email forwarded hoặc ảnh chụp màn hình gửi qua Zalo/Messenger Bot), dữ liệu chuyển qua GPT-4o-mini API phải được bóc tách thành định dạng JSON chuẩn với các quy tắc sau:
+Khi Cloudflare Worker nhận dữ liệu thô (Email forwarded hoặc ảnh chụp màn hình gửi qua Zalo/Telegram Bot), dữ liệu chuyển qua GPT-4o-mini API phải được bóc tách thành định dạng JSON chuẩn với các quy tắc sau:
 
 1. **Merchant:** Phải được chuẩn hóa tên (ví dụ: NETFLIX.COM -> Netflix, APPLE BILLING -> Apple Services).
 2. **Amount:** Tách riêng số tiền và đơn vị tiền tệ (ví dụ: 199000 và VND).

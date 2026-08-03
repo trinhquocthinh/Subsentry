@@ -187,8 +187,8 @@ Không bao giờ được lưu các khóa API, token bí mật trực tiếp tro
 - `OPENAI_API_KEY`: Khóa API của OpenAI sử dụng mô hình GPT-4o-mini.
 - `ZALO_ACCESS_TOKEN`: Token dùng để gọi API gửi tin nhắn chủ động tới thành viên qua Zalo OA.
 - `ZALO_APP_SECRET`: Dùng để xác minh chữ ký HMAC (`X-ZEvent-Signature`) của webhook Zalo OA, chống giả mạo payload.
-- `MESSENGER_PAGE_ACCESS_TOKEN`: Token truy cập Trang dùng để gọi Facebook Graph API.
-- `MESSENGER_APP_SECRET`: Dùng để xác minh chữ ký HMAC (`X-Hub-Signature-256`) của webhook Facebook Messenger.
+- `TELEGRAM_BOT_TOKEN`: Token dùng để gọi Telegram Bot API gửi tin nhắn chủ động và nhận cập nhật.
+- `TELEGRAM_WEBHOOK_SECRET`: Chuỗi bí mật thiết lập khi gọi `setWebhook`, dùng để xác thực header `X-Telegram-Bot-Api-Secret-Token` của mọi webhook Telegram gửi tới.
 - `GOOGLE_SHEETS_API_KEY`: Khóa tích hợp Google API hoặc Token OAuth để đồng bộ Google Sheet.
 - `ADMIN_API_TOKEN`: Token bảo vệ các endpoint quản trị nội bộ (ví dụ `/api/admin/reconcile-sync`).
 
@@ -200,8 +200,8 @@ Chạy các dòng lệnh sau trên Terminal để thiết lập bảo mật:
 wrangler secret put OPENAI_API_KEY
 wrangler secret put ZALO_ACCESS_TOKEN
 wrangler secret put ZALO_APP_SECRET
-wrangler secret put MESSENGER_PAGE_ACCESS_TOKEN
-wrangler secret put MESSENGER_APP_SECRET
+wrangler secret put TELEGRAM_BOT_TOKEN
+wrangler secret put TELEGRAM_WEBHOOK_SECRET
 wrangler secret put GOOGLE_SHEETS_API_KEY
 wrangler secret put ADMIN_API_TOKEN
 ```

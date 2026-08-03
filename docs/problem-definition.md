@@ -2,12 +2,12 @@
 
 **Mạng Lưới An Toàn & Quản Lý Gói Dùng Thử Gia Đình** | _Cooperative Safety Net for Your Family's Digital Wallet_
 
-| Metadata             | Details                                                                                           |
-| -------------------- | ------------------------------------------------------------------------------------------------- |
-| **Document Version** | 1.0                                                                                               |
-| **Core Philosophy**  | Cooperative Safety Net (Mạng lưới an toàn cộng tác)                                               |
-| **Target Market**    | Family & Micro-Group (< 10 users - Dự án Quality of Life phi thương mại)                          |
-| **Tech Stack**       | Cloudflare Workers, Cloudflare D1, Cloudflare Email Routing, Zalo Bot, Messenger Bot, GPT-4o-mini |
+| Metadata             | Details                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| **Document Version** | 1.0                                                                                              |
+| **Core Philosophy**  | Cooperative Safety Net (Mạng lưới an toàn cộng tác)                                              |
+| **Target Market**    | Family & Micro-Group (< 10 users - Dự án Quality of Life phi thương mại)                         |
+| **Tech Stack**       | Cloudflare Workers, Cloudflare D1, Cloudflare Email Routing, Zalo Bot, Telegram Bot, GPT-4o-mini |
 
 ---
 
@@ -15,7 +15,7 @@
 
 **Subsentry (QoL Edition)** là hệ thống hỗ trợ gia đình và nhóm nhỏ (dưới 10 thành viên) cộng tác để kiểm soát, tối ưu hóa các dịch vụ đăng ký định kỳ (Subscriptions) và **chấm dứt các khoản phí dùng thử (Free Trial) lãng phí** [1].
 
-Khác với mô hình thương mại giám sát một chiều, phiên bản QoL hoạt động như một **mạng lưới phòng thủ chủ động và cộng tác tự nguyện**, giúp các thành viên bảo vệ dòng tiền chung của gia đình mà không xâm phạm quyền riêng tư cá nhân [2]. Kênh tương tác chính của hệ thống được xây dựng trên hai ứng dụng phổ biến nhất tại Việt Nam: **Zalo và Facebook Messenger**.
+Khác với mô hình thương mại giám sát một chiều, phiên bản QoL hoạt động như một **mạng lưới phòng thủ chủ động và cộng tác tự nguyện**, giúp các thành viên bảo vệ dòng tiền chung của gia đình mà không xâm phạm quyền riêng tư cá nhân [2]. Kênh tương tác chính của hệ thống được xây dựng trên **Zalo** (phổ biến nhất tại Việt Nam) và **Telegram Bot** — Telegram được chọn thay Facebook Messenger vì có thể khởi tạo bot tức thì qua `@BotFather`, không cần Business Verification/App Review của Meta.
 
 ---
 
@@ -44,10 +44,10 @@ Việc quản lý các dịch vụ đăng ký (_iCloud, Netflix, Spotify, Canva,
 
 #### 🎯 Trọng tâm hệ thống QoL:
 
-1. **🔍 Tự động phát hiện (Privacy-First):** Nhận diện gói đăng ký mới qua bộ lọc chuyển tiếp email chọn lọc và qua Chatbot gia đình (**Zalo / Messenger Bot**) [5].
+1. **🔍 Tự động phát hiện (Privacy-First):** Nhận diện gói đăng ký mới qua bộ lọc chuyển tiếp email chọn lọc và qua Chatbot gia đình (**Zalo / Telegram Bot**) [5].
 2. **🔔 Cảnh báo cộng tác đa tầng:** Nhắc nhở trực tiếp người đăng ký ở mốc T-3 (Soft Alert). Nếu không phản hồi, hệ thống sẽ báo động chủ thẻ ở mốc T-24h (Red Alert) để khóa thẻ tạm thời nếu cần [5, 10].
 3. **💳 Phân định chủ thẻ thanh toán:** Gắn nhãn chi tiết từng gói cước thuộc về thẻ tín dụng của thành viên nào để dễ dàng thực hiện hành động "Kill" (khóa thẻ/hủy dịch vụ) [8, 10].
-4. **⚡ Vận hành tối giản (Zero-Ops):** Giao diện chính là **React SPA** (Cloudflare Pages) nhúng trong **Zalo Mini App** và **Messenger Webview**, kết hợp Chatbot (Zalo/Messenger) để tương tác nhanh gọn; Google Sheets đóng vai trò dashboard cấu hình dự phòng cho thành viên lớn tuổi (Notion là phương án dự phòng tương lai nếu Google Sheets không đáp ứng đủ nhu cầu), chi phí vận hành tiệm cận $0.
+4. **⚡ Vận hành tối giản (Zero-Ops):** Giao diện chính là **React SPA** (Cloudflare Pages) nhúng trong **Zalo Mini App** và **Telegram Mini App**, kết hợp Chatbot (Zalo/Telegram) để tương tác nhanh gọn; Google Sheets đóng vai trò dashboard cấu hình dự phòng cho thành viên lớn tuổi (Notion là phương án dự phòng tương lai nếu Google Sheets không đáp ứng đủ nhu cầu), chi phí vận hành tiệm cận $0.
 
 ---
 
@@ -63,7 +63,7 @@ Việc quản lý các dịch vụ đăng ký (_iCloud, Netflix, Spotify, Canva,
 #### 💳 Subscription / Trial Entity (Thực thể trung tâm) [8]
 
 - **Nhà cung cấp (Merchant):** Tên dịch vụ (Netflix, Spotify, Canva...) [8].
-- **Người đăng ký (Subscriber):** Thành viên trong nhà tạo tài khoản (Xác định bằng Zalo User ID hoặc Messenger PSID).
+- **Người đăng ký (Subscriber):** Thành viên trong nhà tạo tài khoản (Xác định bằng Zalo User ID hoặc Telegram Chat ID).
 - **Chủ thẻ thanh toán (Card Owner):** Người chịu chi phí (Ví dụ: Thẻ Techcombank - Bố).
 - **Ngày gia hạn (Next Billing Date):** Mốc đếm ước tính trừ tiền [8].
 - **Số tiền (Amount):** Số tiền thanh toán định kỳ [8].
@@ -76,7 +76,7 @@ Việc quản lý các dịch vụ đăng ký (_iCloud, Netflix, Spotify, Canva,
 #### 6.1 Privacy-First Inputs [9]
 
 - **Cloudflare Email Routing:** Các thành viên thiết lập bộ lọc tự động chuyển tiếp (auto-forward) trên Gmail cá nhân. Chỉ những email chứa từ khóa (_"subscription"_, _"trial"_, _"invoice"_, _"đăng ký"_) mới được chuyển về hòm thư chung `subs@yourfamily.com` [9].
-- **Interactive Chatbot (Zalo / Messenger):** Thành viên forward tin nhắn biến động số dư ngân hàng hoặc chụp ảnh màn hình biên lai đăng ký gửi vào Zalo Bot hoặc Facebook Messenger Bot chung của gia đình [9].
+- **Interactive Chatbot (Zalo / Telegram):** Thành viên forward tin nhắn biến động số dư ngân hàng hoặc chụp ảnh màn hình biên lai đăng ký gửi vào Zalo Bot hoặc Telegram Bot chung của gia đình [9].
 
 #### 6.2 AI Processing
 
@@ -86,12 +86,12 @@ Việc quản lý các dịch vụ đăng ký (_iCloud, Netflix, Spotify, Canva,
 
 ### 7. Outputs (Dữ Liệu Đầu Đầu Ra)
 
-| Output Component                                               | Chi tiết tính năng (QoL Edition)                                                                                                                                                                                                                                                                                                                      |
-| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 📊 **React SPA Dashboard (Zalo Mini App / Messenger Webview)** | Giao diện quản lý chính của gia đình, hiển thị trực quan danh sách subscription, ngày gia hạn, số tiền và tổng chi phí hàng tháng [10].                                                                                                                                                                                                               |
-| 📊 **Google Sheets Dashboard (dự phòng)**                      | Kênh cấu hình thay thế cho thành viên lớn tuổi; đồng bộ 2 chiều với Cloudflare D1. Notion là phương án dự phòng tương lai nếu cần thay thế Google Sheets [10].                                                                                                                                                                                        |
-| 🔔 **Cooperative Tiered Alerts**                               | • **Soft Alert (T-3 days):** Bot gửi tin nhắn riêng qua Zalo OA/Messenger nhắc nhở thành viên đã đăng ký gói dịch vụ [10].<br>• **Red Alert (T-24 hours):** Nếu thành viên chưa bấm xác nhận "Keep", Bot sẽ gửi cảnh báo khẩn cấp vào nhóm chat gia đình (Zalo Group / Messenger Group) và tag Chủ Thẻ để chuẩn bị phương án khóa thẻ ngân hàng [10]. |
-| 🛡️ **Direct Kill Link**                                        | Bot cung cấp link trực tiếp dẫn đến trang hủy dịch vụ của các app phổ biến nhất của gia đình (iCloud, Spotify, Netflix...) [10].                                                                                                                                                                                                                      |
+| Output Component                                               | Chi tiết tính năng (QoL Edition)                                                                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📊 **React SPA Dashboard (Zalo Mini App / Telegram Mini App)** | Giao diện quản lý chính của gia đình, hiển thị trực quan danh sách subscription, ngày gia hạn, số tiền và tổng chi phí hàng tháng [10].                                                                                                                                                                                                             |
+| 📊 **Google Sheets Dashboard (dự phòng)**                      | Kênh cấu hình thay thế cho thành viên lớn tuổi; đồng bộ 2 chiều với Cloudflare D1. Notion là phương án dự phòng tương lai nếu cần thay thế Google Sheets [10].                                                                                                                                                                                      |
+| 🔔 **Cooperative Tiered Alerts**                               | • **Soft Alert (T-3 days):** Bot gửi tin nhắn riêng qua Zalo OA/Telegram nhắc nhở thành viên đã đăng ký gói dịch vụ [10].<br>• **Red Alert (T-24 hours):** Nếu thành viên chưa bấm xác nhận "Keep", Bot sẽ gửi cảnh báo khẩn cấp vào nhóm chat gia đình (Zalo Group / Telegram Group) và tag Chủ Thẻ để chuẩn bị phương án khóa thẻ ngân hàng [10]. |
+| 🛡️ **Direct Kill Link**                                        | Bot cung cấp link trực tiếp dẫn đến trang hủy dịch vụ của các app phổ biến nhất của gia đình (iCloud, Spotify, Netflix...) [10].                                                                                                                                                                                                                    |
 
 ---
 
@@ -99,7 +99,7 @@ Việc quản lý các dịch vụ đăng ký (_iCloud, Netflix, Spotify, Canva,
 
 Dự án được triển khai trên nền tảng Serverless của **Cloudflare** và **OpenAI** để đảm bảo tính ổn định tuyệt đối và chi phí vận hành tiệm cận bằng $0:
 
-- **Backend (Cloudflare Workers):** Xử lý webhook từ Zalo OA Webhook và Facebook Messenger Webhook, kết hợp Cloudflare Email Routing. Miễn phí 100,000 requests/ngày.
+- **Backend (Cloudflare Workers):** Xử lý webhook từ Zalo OA Webhook và Telegram Bot API Webhook, kết hợp Cloudflare Email Routing. Miễn phí 100,000 requests/ngày.
 - **Database (Cloudflare D1):** Lưu trữ thông tin Subscription/Trial dạng SQLite ngay trên Edge. Miễn phí 5,000,000 lượt đọc và 100,000 lượt ghi mỗi ngày.
 - **LLM Engine (GPT-4o-mini via API):** Gọi trực tiếp từ Việt Nam không qua VPN. Chi phí cực kỳ rẻ (~$0.15/1M tokens đầu vào), tổng chi phí sử dụng thực tế cho cả gia đình < $1/tháng.
 
@@ -113,10 +113,10 @@ Dự án được triển khai trên nền tảng Serverless của **Cloudflare*
 
 - Vận hành nội bộ dưới 10 người dùng gia đình [11].
 - Tích hợp Cloudflare Email Routing để nhận diện email hóa đơn tự động [11].
-- **Zalo / Messenger Bot** tiếp nhận ảnh chụp biên lai và tin nhắn chuyển tiếp [11].
-- Triển khai giao diện quản trị **React SPA** (Cloudflare Pages) nhúng trong Zalo Mini App và Messenger Webview.
+- **Zalo / Telegram Bot** tiếp nhận ảnh chụp biên lai và tin nhắn chuyển tiếp [11].
+- Triển khai giao diện quản trị **React SPA** (Cloudflare Pages) nhúng trong Zalo Mini App và Telegram Mini App.
 - Lưu trữ cơ sở dữ liệu trên Cloudflare D1 và đồng bộ lên Google Sheets (Notion là phương án dự phòng tương lai nếu Google Sheets không đáp ứng đủ nhu cầu).
-- Gửi thông báo đa tầng T-3 (Soft Alert đến người đăng ký qua Zalo/Messenger private chat) và T-24h (Red Alert đến chủ thẻ qua nhóm chat chung) [11].
+- Gửi thông báo đa tầng T-3 (Soft Alert đến người đăng ký qua Zalo/Telegram private chat) và T-24h (Red Alert đến chủ thẻ qua nhóm chat chung) [11].
 
 #### ❌ Ngoài phạm vi (Out of Scope):
 

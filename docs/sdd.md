@@ -2,12 +2,12 @@
 
 **Tài Liệu Đặc Tả Trạng Thái & Thiết Kế API Webhook** | _Spec-Driven Engineering for Reliable Family Automation_
 
-| Document Metadata          | Details                                                      |
-| -------------------------- | ------------------------------------------------------------ |
-| **Document Version**       | 1.0                                                          |
-| **Target Architecture**    | Cloudflare Workers & Cloudflare D1                           |
-| **Integration Interfaces** | Zalo OA Webhooks, Facebook Graph API (Messenger), OpenAI API |
-| **Status**                 | Approved                                                     |
+| Document Metadata          | Details                                        |
+| -------------------------- | ---------------------------------------------- |
+| **Document Version**       | 1.0                                            |
+| **Target Architecture**    | Cloudflare Workers & Cloudflare D1             |
+| **Integration Interfaces** | Zalo OA Webhooks, Telegram Bot API, OpenAI API |
+| **Status**                 | Approved                                       |
 
 ---
 
@@ -117,44 +117,81 @@ Khi thành viên gửi tin nhắn SMS copy hoặc ảnh chụp màn hình biên 
 
 ---
 
-### 2.2 Facebook Messenger Webhook Payload
+### 2.2 Telegram Bot API Webhook Payload
 
-Hệ thống đăng ký Webhook với Graph API của Facebook để tiếp nhận tin nhắn từ thành viên qua Messenger:
+Hệ thống đăng ký Webhook với Telegram Bot API (gọi một lần API `setWebhook` kèm `secret_token`) để tiếp nhận tin nhắn từ thành viên qua Telegram. Telegram gửi mọi sự kiện dưới dạng đối tượng `Update` duy nhất tới endpoint đã đăng ký:
 
-#### 💬 2.2.1 Payload tin nhắn/ảnh chụp từ Messenger:
+#### 💬 2.2.1 Payload tin nhắn văn bản từ Telegram (SMS copy):
 
 ```json
 {
-  "object": "page",
-  "entry": [
-    {
-      "id": "fb_page_id_334455",
-      "time": 1785635043,
-      "messaging": [
-        {
-          "sender": {
-            "id": "messenger_psid_887766"
-          },
-          "recipient": {
-            "id": "fb_page_id_334455"
-          },
-          "timestamp": 1785635043,
-          "message": {
-            "mid": "m_mid_9988776655",
-            "text": "Hóa đơn thanh toán Netflix của bạn trị giá 260.000 đ vào ngày 02/08/2026",
-            "attachments": [
-              {
-                "type": "image",
-                "payload": {
-                  "url": "https://platform-lookaside.fbsbx.com/messenger_media/?mid=att_id_11"
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
+  "update_id": 900112233,
+  "message": {
+    "message_id": 456,
+    "from": {
+      "id": 887766,
+      "is_bot": false,
+      "first_name": "Con"
+    },
+    "chat": {
+      "id": 887766,
+      "type": "private"
+    },
+    "date": 1785635043,
+    "text": "TK 12345678 bien dong -250,000VND vao 02/08/2026. ND: GD tu CANVA.COM"
+  }
+}
+```
+
+#### 📸 2.2.2 Payload ảnh chụp màn hình biên lai (photo):
+
+```json
+{
+  "update_id": 900112234,
+  "message": {
+    "message_id": 457,
+    "from": {
+      "id": 887766,
+      "is_bot": false,
+      "first_name": "Con"
+    },
+    "chat": {
+      "id": 887766,
+      "type": "private"
+    },
+    "date": 1785635045,
+    "photo": [
+      {
+        "file_id": "AgACAgIAAxkBAAI_photo_id_998877",
+        "width": 1080,
+        "height": 1920
+      }
+    ]
+  }
+}
+```
+
+#### 🔘 2.2.3 Payload bấm nút Inline Keyboard (Keep/Kill):
+
+```json
+{
+  "update_id": 900112235,
+  "callback_query": {
+    "id": "cbq_998877",
+    "from": {
+      "id": 887766,
+      "is_bot": false,
+      "first_name": "Con"
+    },
+    "message": {
+      "message_id": 458,
+      "chat": {
+        "id": 887766,
+        "type": "private"
+      }
+    },
+    "data": "ACTION_KILL_SUB_ID_456"
+  }
 }
 ```
 
@@ -231,7 +268,7 @@ Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ 
 
 1. **Confidence Score >= 0.85:**
    - Thao tác: Cloudflare Worker tự động ghi nhận trực tiếp vào bảng `subscriptions` trong Cloudflare D1 Database [9].
-   - Phản hồi: Gửi tin nhắn xác nhận cho thành viên qua Zalo/Messenger: _"Hệ thống đã tự động ghi nhận dịch vụ **Netflix** (260.000 VND), hạn gia hạn kế tiếp là **02/09/2026**. Trạng thái: **Active**."_
+   - Phản hồi: Gửi tin nhắn xác nhận cho thành viên qua Zalo/Telegram: _"Hệ thống đã tự động ghi nhận dịch vụ **Netflix** (260.000 VND), hạn gia hạn kế tiếp là **02/09/2026**. Trạng thái: **Active**."_
 2. **Confidence Score < 0.85:**
    - Thao tác: **Không** lưu trữ tự động vào cơ sở dữ liệu.
    - Phản hồi: Gửi tin nhắn kèm cấu trúc dữ liệu thô yêu cầu thành viên xác nhận thủ công bằng cách bấm nút: _"Hệ thống bóc tách không chắc chắn về biên lai này. Có phải bạn vừa đăng ký **Canva** với giá **250.000 VND** không? [Xác nhận đúng] | [Nhập lại thủ công]"_ [11].
@@ -240,17 +277,17 @@ Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ 
 
 ## 4. Xác Thực Webhook Đầu Vào (Inbound Webhook Signature Verification)
 
-Để ngăn chặn giả mạo payload (spoofing) gửi trực tiếp tới endpoint Worker mà không thông qua Zalo/Messenger/Cloudflare Email Routing thật, mọi webhook endpoint bắt buộc phải xác thực nguồn gốc trước khi xử lý dữ liệu.
+Để ngăn chặn giả mạo payload (spoofing) gửi trực tiếp tới endpoint Worker mà không thông qua Zalo/Telegram/Cloudflare Email Routing thật, mọi webhook endpoint bắt buộc phải xác thực nguồn gốc trước khi xử lý dữ liệu.
 
 ### 4.1 Zalo OA Webhook
 
 - Zalo gửi kèm header `X-ZEvent-Signature` (HMAC-SHA256 tính từ `app_secret` và raw request body).
 - Worker phải tính lại HMAC từ `ZALO_APP_SECRET` (lưu trong Cloudflare Secrets) và so sánh bằng constant-time comparison với header nhận được. Từ chối request (`401 Unauthorized`) nếu chữ ký không khớp.
 
-### 4.2 Facebook Messenger Webhook
+### 4.2 Telegram Bot Webhook
 
-- Facebook gửi kèm header `X-Hub-Signature-256` (HMAC-SHA256 tính từ App Secret và raw body).
-- Worker verify tương tự bằng `MESSENGER_APP_SECRET`, từ chối request nếu chữ ký sai lệch.
+- Khi đăng ký webhook qua `setWebhook`, Worker truyền kèm tham số `secret_token` (giá trị chính là `TELEGRAM_WEBHOOK_SECRET`).
+- Từ thời điểm đó, mọi request Telegram gửi tới endpoint sẽ kèm header `X-Telegram-Bot-Api-Secret-Token`. Worker so sánh (constant-time) giá trị header với `TELEGRAM_WEBHOOK_SECRET` đang lưu trong Cloudflare Secrets; từ chối (`401 Unauthorized`) nếu không khớp hoặc thiếu header.
 
 ### 4.3 Cloudflare Email Routing
 

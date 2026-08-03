@@ -14,7 +14,7 @@ Sơ đồ tuần tự này mô tả vòng đời của một giao dịch từ kh
 sequenceDiagram
     autonumber
     actor Sub as Subscriber (Thành viên)
-    participant Bot as Chatbot Zalo / Messenger
+    participant Bot as Chatbot Zalo / Telegram
     participant CF_Mail as Cloudflare Email Routing
     participant Worker as Cloudflare Workers (Backend)
     participant AI as OpenAI API (GPT-4o-mini)
@@ -83,7 +83,7 @@ sequenceDiagram
     participant Cron as Cloudflare Cron Trigger (08:00 AM)
     participant Worker as Cloudflare Workers (Backend)
     participant D1 as Cloudflare D1 (Database)
-    participant Bot as Chatbot Zalo / Messenger
+    participant Bot as Chatbot Zalo / Telegram
     actor Sub as Subscriber (Thành viên)
     actor Owner as Card Owner (Bố/Mẹ - Chủ thẻ)
 

@@ -85,33 +85,29 @@ export default defineConfig({
 }
 ```
 
-##### 2.2 Facebook Messenger Webhook Payloads (Messenger Bot)
+##### 2.2 Telegram Bot API Webhook Payloads (Telegram Bot)
 
-###### Kịch bản 2.2.1: Thành viên tương tác nút bấm phản hồi nhanh (Quick Reply Button)
+###### Kịch bản 2.2.1: Thành viên tương tác nút bấm Inline Keyboard (Callback Query)
 
 ```json
 {
-  "object": "page",
-  "entry": [
-    {
-      "id": "messenger-page-id",
-      "time": 1788346700000,
-      "messaging": [
-        {
-          "sender": {
-            "id": "messenger-psid-con-ca-2"
-          },
-          "recipient": {
-            "id": "messenger-page-id"
-          },
-          "postback": {
-            "title": "Kill (Hủy dịch vụ)",
-            "payload": "ACTION_KILL_SUB_ID_456"
-          }
-        }
-      ]
-    }
-  ]
+  "update_id": 900112235,
+  "callback_query": {
+    "id": "cbq-998877",
+    "from": {
+      "id": 224466,
+      "is_bot": false,
+      "first_name": "Con Cả"
+    },
+    "message": {
+      "message_id": 458,
+      "chat": {
+        "id": 224466,
+        "type": "private"
+      }
+    },
+    "data": "ACTION_KILL_SUB_ID_456"
+  }
 }
 ```
 

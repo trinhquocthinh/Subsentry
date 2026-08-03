@@ -27,11 +27,11 @@
 | 4   | Feature: Subscription State Machine                    | Epic 2, 3          | 🔴      | [sdd.md](sdd.md), [business-rules.md](business-rules.md)                         |
 | 5   | Feature: Tiered Alerts                                 | Epic 4             | 🔴      | [business-rules.md](business-rules.md), [model-flowchart.md](model-flowchart.md) |
 | 6   | Tích hợp Zalo OA                                       | Epic 3, 4          | 🔴      | [sdd.md](sdd.md)                                                                 |
-| 7   | Tích hợp Facebook Messenger                            | Epic 3, 4          | 🟡      | [sdd.md](sdd.md)                                                                 |
+| 7   | Tích hợp Telegram Bot                                  | Epic 3, 4          | 🟡      | [sdd.md](sdd.md)                                                                 |
 | 8   | Tích hợp Cloudflare Email Routing                      | Epic 3             | 🔴      | [model-c4.md](model-c4.md)                                                       |
 | 9   | Đồng bộ Google Sheets (2-way)                          | Epic 1, 4          | 🟡      | [business-rules.md](business-rules.md)                                           |
 | 10  | Admin & Ops Endpoint                                   | Epic 9             | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
-| 11  | Frontend React SPA (Zalo Mini App / Messenger Webview) | Epic 6, 7          | 🟡      | [techspec.md](techspec.md), [model-c4.md](model-c4.md)                           |
+| 11  | Frontend React SPA (Zalo Mini App / Telegram Mini App) | Epic 6, 7          | 🟡      | [techspec.md](techspec.md), [model-c4.md](model-c4.md)                           |
 | 12  | Bảo mật & Tuân thủ                                     | Epic 6, 7, 8, 10   | 🔴      | [sdd.md](sdd.md) §4, [business-rules.md](business-rules.md) BR-09                |
 | 13  | Testing & Quality Gates                                | Song song mọi Epic | 🔴      | [test-cases-specification.md](test-cases-specification.md)                       |
 | 14  | Disaster Recovery & Backup                             | Epic 1, 9          | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
@@ -63,30 +63,30 @@
 
 ### Task 0.3 — Khởi Tạo Tài Nguyên Cloudflare `M`
 
-- [ ] 0.3.1 Tạo Cloudflare D1 database `subsentry-db`, lấy `database_id`.
+- [x] 0.3.1 Tạo Cloudflare D1 database `subsentry-db`, lấy `database_id`.
 
-- [ ] 0.3.2 Tạo `apps/backend/wrangler.toml` (binding `DB`, cron `0 1 * * *` = 8h sáng VN — xem [setup-and-ops-guide.md](setup-and-ops-guide.md) §4.1).
-- [ ] 0.3.3 Tạo Cloudflare Pages project cho `apps/frontend`.
-- [ ] 0.3.4 Xác minh `wrangler whoami` và quyền truy cập account đúng.
+- [x] 0.3.2 Tạo `apps/backend/wrangler.toml` (binding `DB`, cron `0 1 * * *` = 8h sáng VN — xem [setup-and-ops-guide.md](setup-and-ops-guide.md) §4.1).
+- [x] 0.3.3 Tạo Cloudflare Pages project cho `apps/frontend`.
+- [x] 0.3.4 Xác minh `wrangler whoami` và quyền truy cập account đúng.
 
 ### Task 0.4 — Cấu Hình Secrets 🔴 `S`
 
-- [ ] 0.4.1 `wrangler secret put OPENAI_API_KEY`
+- [x] 0.4.1 `wrangler secret put OPENAI_API_KEY`
 
-- [ ] 0.4.2 `wrangler secret put ZALO_ACCESS_TOKEN`
-- [ ] 0.4.3 `wrangler secret put ZALO_APP_SECRET` (dùng để verify chữ ký webhook — xem [sdd.md](sdd.md) §4.1)
-- [ ] 0.4.4 `wrangler secret put MESSENGER_PAGE_ACCESS_TOKEN`
-- [ ] 0.4.5 `wrangler secret put MESSENGER_APP_SECRET` (xem [sdd.md](sdd.md) §4.2)
-- [ ] 0.4.6 `wrangler secret put GOOGLE_SHEETS_API_KEY`
-- [ ] 0.4.7 `wrangler secret put ADMIN_API_TOKEN` (bảo vệ endpoint `/api/admin/reconcile-sync`)
-- [ ] 0.4.8 Ghi chú toàn bộ secrets vào trình quản lý mật khẩu cá nhân (KHÔNG commit vào git).
+- [x] 0.4.2 `wrangler secret put ZALO_ACCESS_TOKEN`
+- [x] 0.4.3 `wrangler secret put ZALO_APP_SECRET` (dùng để verify chữ ký webhook — xem [sdd.md](sdd.md) §4.1)
+- [x] 0.4.4 `wrangler secret put TELEGRAM_BOT_TOKEN`
+- [x] 0.4.5 `wrangler secret put TELEGRAM_WEBHOOK_SECRET` (xem [sdd.md](sdd.md) §4.2)
+- [x] 0.4.6 `wrangler secret put GOOGLE_SHEETS_API_KEY`
+- [x] 0.4.7 `wrangler secret put ADMIN_API_TOKEN` (bảo vệ endpoint `/api/admin/reconcile-sync`)
+- [x] 0.4.8 Ghi chú toàn bộ secrets vào trình quản lý mật khẩu cá nhân (KHÔNG commit vào git).
 
 ### Task 0.5 — Khung CI/CD Ban Đầu `S`
 
-- [ ] 0.5.1 Tạo `.github/workflows/deploy.yml` theo mẫu ở [setup-and-ops-guide.md](setup-and-ops-guide.md) §6.
+- [x] 0.5.1 Tạo `.github/workflows/deploy.yml` theo mẫu ở [setup-and-ops-guide.md](setup-and-ops-guide.md) §6.
 
-- [ ] 0.5.2 Thêm GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
-- [ ] 0.5.3 Chạy thử pipeline trên nhánh nháp (chưa bật deploy) để xác nhận bước lint/test chạy được.
+- [x] 0.5.2 Thêm GitHub Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
+- [x] 0.5.3 Chạy thử pipeline trên nhánh nháp (chưa bật deploy) để xác nhận bước lint/test chạy được.
 
 **✅ Definition of Done Epic 0:** `yarn install`, `yarn lint`, `yarn test`, `wrangler d1 execute ... --command "SELECT 1"` đều chạy thành công; pre-commit hook hoạt động; toàn bộ secret đã được set.
 
@@ -309,29 +309,29 @@
 
 ---
 
-## Epic 7 — Tích Hợp Facebook Messenger 🟡
+## Epic 7 — Tích Hợp Telegram Bot 🟡
 
-### Task 7.1 — Webhook Verify & Endpoint `S`
+### Task 7.1 — Đăng Ký Webhook & Endpoint `S`
 
-- [ ] 7.1.1 `GET /webhook/messenger` xử lý challenge verification.
+- [ ] 7.1.1 Gọi Telegram Bot API `setWebhook` (một lần, qua script/`curl`) trỏ về `POST /webhook/telegram` kèm tham số `secret_token = TELEGRAM_WEBHOOK_SECRET`.
 
-- [ ] 7.1.2 `POST /webhook/messenger` xử lý ngầm bằng `ctx.waitUntil()`.
+- [ ] 7.1.2 `POST /webhook/telegram` xử lý ngầm bằng `ctx.waitUntil()`.
 
-### Task 7.2 — Xác Thực Chữ Ký 🔴 `S`
+### Task 7.2 — Xác Thực Webhook 🔴 `S`
 
-- [ ] 7.2.1 Verify header `X-Hub-Signature-256` bằng `MESSENGER_APP_SECRET` (xem [sdd.md](sdd.md) §4.2).
+- [ ] 7.2.1 Verify header `X-Telegram-Bot-Api-Secret-Token` khớp với `TELEGRAM_WEBHOOK_SECRET` (xem [sdd.md](sdd.md) §4.2).
 
-### Task 7.3 — Xử Lý Message/Postback `M`
+### Task 7.3 — Xử Lý Message/Callback Query `M`
 
-- [ ] 7.3.1 Nhận text/attachment ảnh → gửi Parser.
+- [ ] 7.3.1 Nhận `message.text`/`message.photo` → gửi Parser.
 
-- [ ] 7.3.2 Nhận postback Keep/Kill → gọi Epic 5 Task 5.5.
+- [ ] 7.3.2 Nhận `callback_query.data` (Keep/Kill) → gọi Epic 5 Task 5.5, phản hồi bằng `answerCallbackQuery`.
 
 ### Task 7.4 — Test Payload `S`
 
 - [ ] 7.4.1 Test theo mock payload ở [test-cases-specification.md](test-cases-specification.md) §2.2.
 
-**✅ DoD Epic 7:** Luồng Messenger tương đương Zalo, test pass đầy đủ.
+**✅ DoD Epic 7:** Luồng Telegram tương đương Zalo, test pass đầy đủ.
 
 ---
 
@@ -405,7 +405,7 @@
 
 ---
 
-## Epic 11 — Frontend: React SPA (Zalo Mini App / Messenger Webview) 🟡
+## Epic 11 — Frontend: React SPA (Zalo Mini App / Telegram Mini App) 🟡
 
 ### Task 11.1 — Khởi Tạo Dự Án Frontend `S`
 
@@ -430,9 +430,9 @@
 
 - [ ] 11.4.1 Lấy `User ID` tự động, không yêu cầu đăng nhập lại.
 
-### Task 11.5 — Tích Hợp Messenger Webview `M`
+### Task 11.5 — Tích Hợp Telegram Mini App (Web App SDK) `M`
 
-- [ ] 11.5.1 Nhúng SPA trong Messenger Extensions, lấy PSID tự động.
+- [ ] 11.5.1 Nhúng SPA làm Telegram Web App, lấy `user.id`/`initData` tự động qua `window.Telegram.WebApp`.
 
 ### Task 11.6 — Kết Nối API Backend `M`
 
@@ -442,7 +442,7 @@
 
 - [ ] 11.7.1 Smoke test render Dashboard, test tương tác nút Keep/Kill.
 
-**✅ DoD Epic 11:** Thành viên gia đình mở Zalo Mini App / Messenger Webview thấy đúng dữ liệu, thao tác được Keep/Kill/sửa thẻ.
+**✅ DoD Epic 11:** Thành viên gia đình mở Zalo Mini App / Telegram Mini App thấy đúng dữ liệu, thao tác được Keep/Kill/sửa thẻ.
 
 ---
 
@@ -520,7 +520,7 @@
 
 ### Task 15.2 — Thêm Thành Viên Vào Bot `S`
 
-- [ ] 15.2.1 Thêm bạn bè Zalo OA / nhắn Messenger Page cho toàn bộ 10 thành viên.
+- [ ] 15.2.1 Thêm bạn bè Zalo OA / mời thành viên kích hoạt chat với Telegram Bot cho toàn bộ 10 thành viên.
 
 - [ ] 15.2.2 Test gửi thử 1 ảnh biên lai + 1 SMS mẫu từ mỗi thành viên.
 

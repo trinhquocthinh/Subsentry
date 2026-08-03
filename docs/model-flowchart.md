@@ -23,7 +23,7 @@ flowchart TD
     START([Bắt đầu: Nhận Email / Ảnh biên lai / SMS]):::start_end
 
     REC_EMAIL[CF Email Routing nhận email thô]:::step
-    REC_BOT[Chatbot Zalo / Messenger nhận ảnh / SMS]:::step
+    REC_BOT[Chatbot Zalo / Telegram nhận ảnh / SMS]:::step
 
     PARSER[Worker gửi dữ liệu sang OpenAI GPT-4o-mini API]:::ai
 
@@ -43,7 +43,7 @@ flowchart TD
 
     USER_RESP{Thành viên bấm nút<br>Xác nhận?}:::decision
 
-    USER_EDIT[Mở Zalo Mini App / Webview để thành viên sửa nhanh]:::step
+    USER_EDIT[Mở Zalo Mini App / Telegram Mini App để thành viên sửa nhanh]:::step
 
     %% Flow lines
     START --> REC_EMAIL

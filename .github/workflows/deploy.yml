@@ -1,0 +1,61 @@
+name: Subsentry CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-gate-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # --- QUALITY GATES VALIDATION ---
+      - name: 🧹 Prettier Code Format Check
+        run: yarn format:check
+
+      - name: 🚨 ESLint Linting Check
+        run: yarn lint
+
+      - name: 👯 Duplicate Code Check (jscpd)
+        run: yarn duplicate:check
+
+      - name: 💀 Dead Code Check (Knip)
+        run: yarn deadcode:check
+
+      - name: 🧪 Run Unit Tests (Vitest)
+        run: yarn test
+
+      # --- CONTINUOUS DEPLOYMENT (CD) ---
+      - name: 🚀 Deploy Backend to Cloudflare Workers
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 'apps/backend'
+
+      - name: 🛠️ Build Frontend SPA
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: yarn workspace @subsentry/frontend build
+
+      - name: 🌐 Deploy Frontend to Cloudflare Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/frontend/dist --project-name=subsentry-web

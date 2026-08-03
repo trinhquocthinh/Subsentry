@@ -1,0 +1,13 @@
+name = "subsentry-backend"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+crons = ["0 1 * * *"]
+
+# Khai báo liên kết Cơ sở dữ liệu Cloudflare D1
+[[d1_databases]]
+binding = "DB"
+database_name = "subsentry-db"
+database_id = "f84d61b2-d23a-4362-abfb-7510113b5326"

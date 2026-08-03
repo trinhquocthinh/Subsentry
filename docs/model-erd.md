@@ -15,7 +15,7 @@ erDiagram
     MEMBERS {
         integer id PK
         varchar zalo_user_id "Nullable - Định danh Zalo"
-        varchar messenger_psid "Nullable - Định danh Messenger"
+        varchar telegram_chat_id "Nullable - Định danh Telegram"
         varchar display_name "Tên hiển thị thành viên"
         varchar role "ADMIN | SUBSCRIBER | CARD_OWNER"
         datetime created_at
@@ -60,7 +60,7 @@ erDiagram
 
     PARSING_LOGS {
         integer id PK
-        varchar source "EMAIL | CHAT_ZALO | CHAT_FB"
+        varchar source "EMAIL | CHAT_ZALO | CHAT_TG"
         varchar sender_id "Định danh người gửi thô"
         text raw_content "Nội dung email hoặc link ảnh thô"
         text parsed_json "Dữ liệu bóc tách thô từ AI"
@@ -89,7 +89,7 @@ Lưu trữ thông tin định danh và phân quyền của 10 thành viên trong
 | :------------------ | :------------- | :-------------------------- | :--------------------------------------------------------- |
 | `id`                | `INTEGER`      | `PRIMARY KEY AUTOINCREMENT` | Khóa chính tự tăng                                         |
 | `zalo_user_id`      | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | ID người dùng Zalo phục vụ giao tiếp qua Zalo OA           |
-| `messenger_psid`    | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | Page-Scoped ID của Facebook Messenger                      |
+| `telegram_chat_id`  | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | Chat ID định danh người dùng trên Telegram                 |
 | `display_name`      | `VARCHAR(100)` | `NOT NULL`                  | Tên gọi thân mật của thành viên trong nhà                  |
 | `role`              | `VARCHAR(20)`  | `NOT NULL`                  | Vai trò: `'ADMIN'` (Bố/Mẹ), `'SUBSCRIBER'`, `'CARD_OWNER'` |
 | `created_at`        | `DATETIME`     | `DEFAULT CURRENT_TIMESTAMP` | Thời điểm đăng ký vào hệ thống                             |
@@ -152,8 +152,8 @@ Nhật ký bóc tách dữ liệu từ AI để lưu trữ dữ liệu thô ph�
 | Tên trường (Column) | Kiểu dữ liệu   | Ràng buộc                   | Mô tả                                                           |
 | :------------------ | :------------- | :-------------------------- | :-------------------------------------------------------------- |
 | `id`                | `INTEGER`      | `PRIMARY KEY AUTOINCREMENT` | Khóa chính tự tăng                                              |
-| `source`            | `VARCHAR(20)`  | `NOT NULL`                  | Nguồn: `'EMAIL'`, `'CHAT_ZALO'`, `'CHAT_FB'`                    |
-| `sender_id`         | `VARCHAR(255)` | `NOT NULL`                  | Zalo ID, Messenger PSID, hoặc email gửi thô để định danh        |
+| `source`            | `VARCHAR(20)`  | `NOT NULL`                  | Nguồn: `'EMAIL'`, `'CHAT_ZALO'`, `'CHAT_TG'`                    |
+| `sender_id`         | `VARCHAR(255)` | `NOT NULL`                  | Zalo ID, Telegram Chat ID, hoặc email gửi thô để định danh      |
 | `raw_content`       | `TEXT`         | `NOT NULL`                  | Email text thô hoặc URL ảnh biên lai lưu trên Cloudflare Images |
 | `parsed_json`       | `TEXT`         | `NULLABLE`                  | Kết quả chuỗi JSON string nhận về từ GPT-4o-mini                |
 | `confidence_score`  | `REAL`         | `DEFAULT 0.00`              | Điểm số tự tin của mô hình                                      |
@@ -174,7 +174,7 @@ import { sql } from 'drizzle-orm';
 export const members = sqliteTable('members', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   zaloUserId: text('zalo_user_id').unique(),
-  messengerPsid: text('messenger_psid').unique(),
+  telegramChatId: text('telegram_chat_id').unique(),
   displayName: text('display_name').notNull(),
   role: text('role', { enum: ['ADMIN', 'SUBSCRIBER', 'CARD_OWNER'] }).notNull(),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
@@ -235,7 +235,7 @@ export const alerts = sqliteTable('alerts', {
 // 5. Parsing Logs Table
 export const parsingLogs = sqliteTable('parsing_logs', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  source: text('source', { enum: ['EMAIL', 'CHAT_ZALO', 'CHAT_FB'] }).notNull(),
+  source: text('source', { enum: ['EMAIL', 'CHAT_ZALO', 'CHAT_TG'] }).notNull(),
   senderId: text('sender_id').notNull(),
   rawContent: text('raw_content').notNull(),
   parsedJson: text('parsed_json'),
