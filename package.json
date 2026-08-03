@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "duplicate:check": "jscpd",
+    "duplicate:check": "jscpd apps/ --config .jscpd.json",
     "deadcode:check": "knip",
     "test": "vitest run --passWithNoTests"
   },

@@ -134,23 +134,23 @@
 
 ### Task 2.1 — Khung Hono App `M`
 
-- [ ] 2.1.1 Khởi tạo `src/index.ts` với Hono app + router gốc.
+- [x] 2.1.1 Khởi tạo `src/index.ts` với Hono app + router gốc.
 
-- [ ] 2.1.2 Middleware xử lý lỗi tập trung (`core/errors`), trả JSON chuẩn hóa.
-- [ ] 2.1.3 Middleware logging request (ẩn dữ liệu nhạy cảm khỏi log).
-- [ ] 2.1.4 Cấu trúc thư mục `src/core`, `src/features/{subscription,alert,parser}` theo [techspec.md](techspec.md) §2.1.
+- [x] 2.1.2 Middleware xử lý lỗi tập trung (`core/errors`), trả JSON chuẩn hóa.
+- [x] 2.1.3 Middleware logging request (ẩn dữ liệu nhạy cảm khỏi log).
+- [x] 2.1.4 Cấu trúc thư mục `src/core`, `src/features/{subscription,alert,parser}` theo [techspec.md](techspec.md) §2.1.
 
 ### Task 2.2 — DB Client Wrapper `S`
 
-- [ ] 2.2.1 Tạo `core/db/client.ts` khởi tạo Drizzle từ `env.DB`.
+- [x] 2.2.1 Tạo `core/db/client.ts` khởi tạo Drizzle từ `env.DB`.
 
-- [ ] 2.2.2 Export schema tập trung để các feature dùng chung.
+- [x] 2.2.2 Export schema tập trung để các feature dùng chung.
 
 ### Task 2.3 — Shared Types/DTOs `S`
 
-- [ ] 2.3.1 Định nghĩa type `SubscriptionExtraction` (khớp JSON Schema ở [sdd.md](sdd.md) §3.1).
+- [x] 2.3.1 Định nghĩa type `SubscriptionExtraction` (khớp JSON Schema ở [sdd.md](sdd.md) §3.1).
 
-- [ ] 2.3.2 Định nghĩa enum dùng chung: `SubscriptionStatus`, `AlertType`, `MemberRole`.
+- [x] 2.3.2 Định nghĩa enum dùng chung: `SubscriptionStatus`, `AlertType`, `MemberRole`.
 
 **✅ DoD Epic 2:** Worker chạy `yarn backend:dev` trả về `200 OK` ở route health-check; cấu trúc thư mục khớp Clean Architecture.
 

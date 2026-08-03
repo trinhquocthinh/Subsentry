@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import path from 'node:path';
 
 // Dùng path.resolve để trỏ chính xác về apps/backend/drizzle độc lập với Working Directory
-const migrationsFolder = path.resolve(__dirname, '../../drizzle');
+const migrationsFolder = path.resolve(__dirname, '../../../drizzle');
 
 describe('Epic 1 - Task 1.4: Strict Schema & Constraint Validation', () => {
   let sqlite: InstanceType<typeof Database>;

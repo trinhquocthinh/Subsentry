@@ -1,0 +1,19 @@
+{
+  "threshold": 0,
+  "reporters": ["console"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/*.md",
+    "**/docs/**",
+    "**/drizzle/**",
+    "**/meta/**",
+    "**/.github/**",
+    "**/*.sql",
+    "**/*.json",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "format": ["typescript", "javascript"]
+}
