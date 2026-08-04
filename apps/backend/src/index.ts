@@ -1,5 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { Hono } from 'hono';
+import { RetryFailedParsingLogsUseCase } from './features/parser/use-cases/retry-failed-parsing-logs.use-case';
+import { OpenAIParserAdapter } from './features/parser/adapters/openai-parser.adapter';
 import { createDbClient } from './core/db';
 import { globalErrorHandler, notFoundHandler } from './core/errors/error-handler';
 import { requestLogger } from './core/middleware/logger';
@@ -46,4 +48,13 @@ app.get('/health-check', async (c) => {
 
 app.get('/', (c) => c.text('Subsentry API Kernel Active'));
 
-export default app;
+export default {
+  fetch: app.fetch,
+  scheduled: async (event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) => {
+    const db = createDbClient(env.DB);
+    const parserService = new OpenAIParserAdapter(env.OPENAI_API_KEY as string);
+    const useCase = new RetryFailedParsingLogsUseCase(parserService, db);
+
+    ctx.waitUntil(useCase.execute());
+  },
+};

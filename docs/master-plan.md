@@ -160,38 +160,38 @@
 
 ### Task 3.1 — Domain & Interface `S`
 
-- [ ] 3.1.1 Entity `ParsingLog`, interface `IParserService.parse(input): Promise<SubscriptionExtraction>`.
+- [x] 3.1.1 Entity `ParsingLog`, interface `IParserService.parse(input): Promise<SubscriptionExtraction>`.
 
 ### Task 3.2 — Adapter OpenAI Client `M`
 
-- [ ] 3.2.1 Gọi OpenAI GPT-4o-mini với `response_format: { type: "json_object" }`.
+- [x] 3.2.1 Gọi OpenAI GPT-4o-mini với `response_format: { type: "json_schema" }`.
 
-- [ ] 3.2.2 Áp JSON Schema strict theo [sdd.md](sdd.md) §3.1 (merchant, amount, currency, is_trial, next_billing_date, confidence_score).
-- [ ] 3.2.3 Chuẩn hóa tên merchant (map NETFLIX.COM → Netflix, APPLE BILLING → Apple Services).
-- [ ] 3.2.4 Xử lý ngày thiếu năm: suy luận năm dựa trên ngày hệ thống hiện tại (TC-10).
+- [x] 3.2.2 Áp JSON Schema strict theo [sdd.md](sdd.md) §3.1 (merchant, amount, currency, is_trial, next_billing_date, confidence_score).
+- [x] 3.2.3 Chuẩn hóa tên merchant (map NETFLIX.COM → Netflix, APPLE BILLING → Apple Services).
+- [x] 3.2.4 Xử lý ngày thiếu năm: suy luận năm dựa trên ngày hệ thống hiện tại (TC-10).
 
 ### Task 3.3 — Use Case `parseReceipt()` `M`
 
-- [ ] 3.3.1 Nhánh Confidence Score ≥ 0.85: ghi thẳng vào `subscriptions`.
+- [x] 3.3.1 Nhánh Confidence Score ≥ 0.85: ghi thẳng vào `subscriptions`.
 
-- [ ] 3.3.2 Nhánh Confidence Score < 0.85: ghi `parsing_logs` (LOW_CONFIDENCE) + gửi tin nhắn xác nhận thủ công.
-- [ ] 3.3.3 Sanitize nội dung thô trước khi đưa vào prompt (chống prompt injection — Epic 12).
+- [x] 3.3.2 Nhánh Confidence Score < 0.85: ghi `parsing_logs` (LOW_CONFIDENCE) + gửi tin nhắn xác nhận thủ công.
+- [x] 3.3.3 Sanitize nội dung thô trước khi đưa vào prompt (chống prompt injection — Epic 12).
 
 ### Task 3.4 — Fallback Khi OpenAI Lỗi 🔴 `S`
 
-- [ ] 3.4.1 Bọc `try/catch` quanh lời gọi OpenAI (theo [disaster-recovery-fallback.md](disaster-recovery-fallback.md) §1.2).
+- [x] 3.4.1 Bọc `try/catch` quanh lời gọi OpenAI (theo [disaster-recovery-fallback.md](disaster-recovery-fallback.md) §1.2).
 
-- [ ] 3.4.2 Lưu raw content vào `parsing_logs` với `status = FAILED`.
-- [ ] 3.4.3 Gửi tin nhắn thân thiện kèm link nhập tay Google Sheets.
-- [ ] 3.4.4 Cron retry ban đêm cho các bản ghi `FAILED`.
+- [x] 3.4.2 Lưu raw content vào `parsing_logs` với `status = FAILED`.
+- [x] 3.4.3 Gửi tin nhắn thân thiện kèm link nhập tay Google Sheets.
+- [x] 3.4.4 Cron retry ban đêm cho các bản ghi `FAILED`.
 
 ### Task 3.5 — Unit Test `M`
 
-- [ ] 3.5.1 TC-06: Confidence ≥ 0.85 → tự động lưu.
+- [x] 3.5.1 TC-06: Confidence ≥ 0.85 → tự động lưu.
 
-- [ ] 3.5.2 TC-07: Confidence < 0.85 → yêu cầu xác nhận.
-- [ ] 3.5.3 TC-09: Hóa đơn 0đ (Free Trial) → `amount = 0`, status = TRIAL.
-- [ ] 3.5.4 TC-10: Ngày thiếu năm → suy luận đúng theo thời điểm hệ thống.
+- [x] 3.5.2 TC-07: Confidence < 0.85 → yêu cầu xác nhận.
+- [x] 3.5.3 TC-09: Hóa đơn 0đ (Free Trial) → `amount = 0`, status = TRIAL.
+- [x] 3.5.4 TC-10: Ngày thiếu năm → suy luận đúng theo thời điểm hệ thống.
 
 **✅ DoD Epic 3:** 100% test case Parser trong [test-cases-specification.md](test-cases-specification.md) §2-4 pass; coverage ≥ 85% cho `features/parser`.
 

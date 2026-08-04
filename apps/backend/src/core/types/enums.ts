@@ -1,71 +1,55 @@
-/**
- * Vai trò của thành viên trong gia đình (BR-01, model-erd.md §2.1)
- */
-export enum MemberRole {
-  ADMIN = 'ADMIN', // Quản trị viên gia đình (Bố/Mẹ)
-  SUBSCRIBER = 'SUBSCRIBER', // Thành viên sử dụng dịch vụ
-  CARD_OWNER = 'CARD_OWNER', // Chủ thẻ gánh phí
-}
+export const MemberRole = {
+  ADMIN: 'ADMIN',
+  SUBSCRIBER: 'SUBSCRIBER',
+  CARD_OWNER: 'CARD_OWNER',
+} as const;
+export type MemberRole = (typeof MemberRole)[keyof typeof MemberRole];
 
-/**
- * Trạng thái của gói đăng ký dịch vụ (model-erd.md §2.3)
- */
-export enum SubscriptionStatus {
-  TRIAL = 'TRIAL', // Đang dùng thử
-  ACTIVE = 'ACTIVE', // Đang hoạt động & tính phí
-  PENDING_KILL = 'PENDING_KILL', // Đã lên lịch hủy (chờ xác nhận)
-  KILLED = 'KILLED', // Đã hủy thành công
-}
+export const SubscriptionStatus = {
+  TRIAL: 'TRIAL',
+  ACTIVE: 'ACTIVE',
+  PENDING_KILL: 'PENDING_KILL',
+  KILLED: 'KILLED',
+} as const;
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];
 
-/**
- * Chu kỳ thanh toán dịch vụ
- */
-export enum BillingCycle {
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-  YEARLY = 'YEARLY',
-}
+export const BillingCycle = {
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY',
+  YEARLY: 'YEARLY',
+} as const;
+export type BillingCycle = (typeof BillingCycle)[keyof typeof BillingCycle];
 
-/**
- * Phân tầng cảnh báo (business-rules.md)
- */
-export enum AlertType {
-  SOFT_T3 = 'SOFT_T3', // Nhắc nhở nhẹ trước 3 ngày
-  RED_T24 = 'RED_T24', // Cảnh báo đỏ trước 24 giờ (có nút Hủy khẩn cấp)
-}
+export const AlertType = {
+  SOFT_T3: 'SOFT_T3',
+  RED_T24: 'RED_T24',
+} as const;
+export type AlertType = (typeof AlertType)[keyof typeof AlertType];
 
-/**
- * Trạng thái của tác vụ cảnh báo
- */
-export enum AlertStatus {
-  SCHEDULED = 'SCHEDULED',
-  SENT = 'SENT',
-  CANCELLED = 'CANCELLED',
-}
+export const AlertStatus = {
+  SCHEDULED: 'SCHEDULED',
+  SENT: 'SENT',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type AlertStatus = (typeof AlertStatus)[keyof typeof AlertStatus];
 
-/**
- * Phản hồi của người dùng với cảnh báo
- */
-export enum AlertResponse {
-  PENDING = 'PENDING',
-  KEEP = 'KEEP',
-  KILL = 'KILL',
-}
+export const AlertResponse = {
+  PENDING: 'PENDING',
+  KEEP: 'KEEP',
+  KILL: 'KILL',
+} as const;
+export type AlertResponse = (typeof AlertResponse)[keyof typeof AlertResponse];
 
-/**
- * Nguồn dữ liệu hóa đơn/biên lai đầu vào
- */
-export enum ParsingLogSource {
-  EMAIL = 'EMAIL',
-  CHAT_ZALO = 'CHAT_ZALO',
-  CHAT_FB = 'CHAT_FB',
-}
+export const ParsingLogStatus = {
+  SUCCESS: 'SUCCESS',
+  LOW_CONFIDENCE: 'LOW_CONFIDENCE',
+  FAILED: 'FAILED',
+} as const;
+export type ParsingLogStatus = (typeof ParsingLogStatus)[keyof typeof ParsingLogStatus];
 
-/**
- * Trạng thái xử lý bóc tách của AI
- */
-export enum ParsingLogStatus {
-  SUCCESS = 'SUCCESS',
-  LOW_CONFIDENCE = 'LOW_CONFIDENCE',
-  FAILED = 'FAILED',
-}
+export const ParserSource = {
+  EMAIL: 'EMAIL',
+  CHAT_ZALO: 'CHAT_ZALO',
+  CHAT_TG: 'CHAT_TG',
+} as const;
+export type ParserSource = (typeof ParserSource)[keyof typeof ParserSource];

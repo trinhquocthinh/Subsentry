@@ -217,7 +217,7 @@ Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ 
 
 ### 3.1 Strict JSON Schema Definition (Cấu trúc trả về bắt buộc)
 
-Để đảm bảo Cloudflare Worker có thể đọc và lưu trữ dữ liệu vào database SQLite D1 mà không gặp lỗi parse, API gọi OpenAI GPT-4o-mini bắt buộc phải cấu hình tham số `response_format: { type: "json_object" }` kèm theo prompt ép kiểu JSON nghiêm ngặt dưới đây:
+Để đảm bảo Cloudflare Worker có thể đọc và lưu trữ dữ liệu vào database SQLite D1 mà không gặp lỗi parse, API gọi OpenAI GPT-4o-mini bắt buộc phải cấu hình tham số `response_format: { type: "json_schema" }` kèm theo prompt ép kiểu JSON nghiêm ngặt dưới đây:
 
 ```json
 {

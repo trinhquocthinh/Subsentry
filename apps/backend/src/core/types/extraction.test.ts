@@ -11,17 +11,17 @@ describe('Epic 2 - Shared Kernel: Types & DTOs Validation', () => {
 
   it('Phải khởi tạo DTO SubscriptionExtraction đúng cấu trúc sdd.md §3.1', () => {
     const mockExtraction: SubscriptionExtraction = {
-      merchant_name: 'Netflix',
+      merchantName: 'Netflix',
       amount: 260000,
       currency: 'VND',
-      is_trial: false,
-      billing_cycle: BillingCycle.MONTHLY,
-      next_billing_date: '2026-09-02',
-      confidence_score: 0.95,
-      direct_kill_link: 'https://netflix.com/youraccount',
+      isTrial: false,
+      billingCycle: BillingCycle.MONTHLY,
+      nextBillingDate: '2026-09-02',
+      confidenceScore: 0.95,
+      directKillLink: 'https://netflix.com/youraccount',
     };
 
-    expect(mockExtraction.merchant_name).toBe('Netflix');
-    expect(mockExtraction.confidence_score).toBeGreaterThanOrEqual(0.85);
+    expect(mockExtraction.merchantName).toBe('Netflix');
+    expect(mockExtraction.confidenceScore).toBeGreaterThanOrEqual(0.85);
   });
 });
