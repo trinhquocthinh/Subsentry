@@ -201,37 +201,37 @@
 
 ### Task 4.1 — Domain Entity & Enum `S`
 
-- [ ] 4.1.1 Entity `Subscription` với state enum `TRIAL|ACTIVE|PENDING_KILL|KILLED`.
+- [x] 4.1.1 Entity `Subscription` với state enum `TRIAL|ACTIVE|PENDING_KILL|KILLED`.
 
 ### Task 4.2 — Use Case `transitionState(action)` `M`
 
-- [ ] 4.2.1 `TRIAL` + Keep → `ACTIVE` (BR-04).
+- [x] 4.2.1 `TRIAL` + Keep → `ACTIVE` (BR-04).
 
-- [ ] 4.2.2 `TRIAL`/`ACTIVE` + Kill → `PENDING_KILL` (kèm sinh `direct_kill_link`).
-- [ ] 4.2.3 `PENDING_KILL` + xác nhận đã hủy → `KILLED`.
+- [x] 4.2.2 `TRIAL`/`ACTIVE` + Kill → `PENDING_KILL` (kèm sinh `direct_kill_link`).
+- [x] 4.2.3 `PENDING_KILL` + xác nhận đã hủy → `KILLED`.
 
 ### Task 4.3 — Use Case `handleIncomingInvoice()` `M`
 
-- [ ] 4.3.1 Nếu subscription đang `KILLED` và có hóa đơn mới cùng merchant+subscriber → reopen về `ACTIVE`/`TRIAL` (theo cập nhật mới nhất trong [sdd.md](sdd.md) §1.1, TC-05).
+- [x] 4.3.1 Nếu subscription đang `KILLED` và có hóa đơn mới cùng merchant+subscriber → reopen về `ACTIVE`/`TRIAL` (theo cập nhật mới nhất trong [sdd.md](sdd.md) §1.1, TC-05).
 
-- [ ] 4.3.2 Nếu là hóa đơn dùng thử mới → set `TRIAL`; nếu là hóa đơn trả phí → set `ACTIVE`.
+- [x] 4.3.2 Nếu là hóa đơn dùng thử mới → set `TRIAL`; nếu là hóa đơn trả phí → set `ACTIVE`.
 
 ### Task 4.4 — Use Case `detectRedundancy()` 🟡 `M`
 
-- [ ] 4.4.1 Query D1 tìm các merchant trùng tên đang `ACTIVE` do subscriber khác nhau đứng tên (TC-11).
+- [x] 4.4.1 Query D1 tìm các merchant trùng tên đang `ACTIVE` do subscriber khác nhau đứng tên (TC-11).
 
-- [ ] 4.4.2 Sinh gợi ý tiết kiệm (ước tính chênh lệch giá Individual vs Family plan).
-- [ ] 4.4.3 Gửi thông báo gợi ý gộp gói vào nhóm chat chung.
+- [x] 4.4.2 Sinh gợi ý tiết kiệm (ước tính chênh lệch giá Individual vs Family plan).
+- [x] 4.4.3 Gửi thông báo gợi ý gộp gói vào nhóm chat chung.
 
 ### Task 4.5 — Repository Layer `S`
 
-- [ ] 4.5.1 CRUD `subscriptions` qua Drizzle (create/update/find by status/find by next_billing_date range).
+- [x] 4.5.1 CRUD `subscriptions` qua Drizzle (create/update/find by status/find by next_billing_date range).
 
 ### Task 4.6 — Unit Test `M`
 
-- [ ] 4.6.1 TC-01 → TC-05 (chuyển trạng thái đầy đủ, bao gồm reopen KILLED→ACTIVE).
+- [x] 4.6.1 TC-01 → TC-05 (chuyển trạng thái đầy đủ, bao gồm reopen KILLED→ACTIVE).
 
-- [ ] 4.6.2 TC-11 (redundancy detection).
+- [x] 4.6.2 TC-11 (redundancy detection).
 
 **✅ DoD Epic 4:** Máy trạng thái khớp 100% với sơ đồ trong [sdd.md](sdd.md) §1 (đã cập nhật); coverage ≥ 85%.
 
