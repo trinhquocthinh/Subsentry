@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { NotFoundError, BadRequestError, UnauthorizedError } from './app-error';
 import { globalErrorHandler, notFoundHandler } from './error-handler';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import type { Context } from 'hono';
 
 describe('AppError & Error Handlers', () => {

@@ -241,36 +241,36 @@
 
 ### Task 5.1 — Domain & Cron Handler `M`
 
-- [ ] 5.1.1 Entity `Alert` (SOFT_T3, RED_T24).
+- [x] 5.1.1 Entity `Alert` (SOFT_T3, RED_T24).
 
-- [ ] 5.1.2 Cron `scheduled()` chạy 01:00 UTC (08:00 VN) quét `subscriptions` trạng thái `TRIAL`/`ACTIVE` — [model-flowchart.md](model-flowchart.md) §2.
+- [x] 5.1.2 Cron `scheduled()` chạy 01:00 UTC (08:00 VN) quét `subscriptions` trạng thái `TRIAL`/`ACTIVE` — [model-flowchart.md](model-flowchart.md) §2.
 
 ### Task 5.2 — Logic Tính Mốc Thời Gian `M`
 
-- [ ] 5.2.1 Tính số ngày còn lại = `next_billing_date - hôm nay`.
+- [x] 5.2.1 Tính số ngày còn lại = `next_billing_date - hôm nay`.
 
-- [ ] 5.2.2 Nếu còn đúng 3 ngày → tạo `SOFT_T3`, gửi private chat kèm nút Keep/Kill (BR-04).
-- [ ] 5.2.3 Nếu còn đúng 1 ngày (T-24h) và chưa phản hồi Soft Alert → kiểm tra `is_must_keep`.
+- [x] 5.2.2 Nếu còn đúng 3 ngày → tạo `SOFT_T3`, gửi private chat kèm nút Keep/Kill (BR-04).
+- [x] 5.2.3 Nếu còn đúng 1 ngày (T-24h) và chưa phản hồi Soft Alert → kiểm tra `is_must_keep`.
 
 ### Task 5.3 — Must-Keep Exemption `S`
 
-- [ ] 5.3.1 Nếu `is_must_keep = true` → bỏ qua Red Alert, chỉ log vào Spend Report (BR-05, TC-08).
+- [x] 5.3.1 Nếu `is_must_keep = true` → bỏ qua Red Alert, chỉ log vào Spend Report (BR-05, TC-08).
 
 ### Task 5.4 — Red Alert Escalation `M`
 
-- [ ] 5.4.1 Gửi tin nhắn vào nhóm chat gia đình, tag Subscriber + Card Owner.
+- [x] 5.4.1 Gửi tin nhắn vào nhóm chat gia đình, tag Subscriber + Card Owner.
 
-- [ ] 5.4.2 Nội dung theo mẫu chuẩn trong [business-rules.md](business-rules.md) BR-04.
+- [x] 5.4.2 Nội dung theo mẫu chuẩn trong [business-rules.md](business-rules.md) BR-04.
 
 ### Task 5.5 — Xử Lý Phản Hồi Người Dùng `M`
 
-- [ ] 5.5.1 Webhook nhận postback Keep/Kill → cập nhật `alerts.response` + gọi `transitionState()`.
+- [x] 5.5.1 Webhook nhận postback Keep/Kill → cập nhật `alerts.response` + gọi `transitionState()`.
 
 ### Task 5.6 — Unit/Integration Test `M`
 
-- [ ] 5.6.1 Test cron end-to-end bằng Miniflare + fake timers.
+- [x] 5.6.1 Test cron end-to-end bằng Miniflare + fake timers.
 
-- [ ] 5.6.2 TC-08 (Must-Keep không bao giờ nhận Red Alert).
+- [x] 5.6.2 TC-08 (Must-Keep không bao giờ nhận Red Alert).
 
 **✅ DoD Epic 5:** Toàn bộ luồng cảnh báo mô tả trong [model-sequence.md](model-sequence.md) §2 chạy đúng trong môi trường giả lập.
 

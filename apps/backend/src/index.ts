@@ -2,6 +2,12 @@ import { sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { RetryFailedParsingLogsUseCase } from './features/parser/use-cases/retry-failed-parsing-logs.use-case';
 import { OpenAIParserAdapter } from './features/parser/adapters/openai-parser.adapter';
+import { ProcessTieredAlertsUseCase } from './features/alert/use-cases/process-tiered-alerts.use-case';
+import { DrizzleAlertRepository } from './features/alert/adapters/drizzle-alert.repository';
+import { MockNotificationService } from './features/alert/adapters/mock-notification.adapter';
+import { DrizzleSubscriptionRepository } from './features/subscription/adapters/drizzle-subscription.repository';
+import { DrizzleMemberRepository } from './features/subscription/adapters/drizzle-member.repository';
+import { DrizzlePaymentCardRepository } from './features/subscription/adapters/drizzle-payment-card.repository';
 import { createDbClient } from './core/db';
 import { globalErrorHandler, notFoundHandler } from './core/errors/error-handler';
 import { requestLogger } from './core/middleware/logger';
@@ -53,8 +59,22 @@ export default {
   scheduled: async (event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) => {
     const db = createDbClient(env.DB);
     const parserService = new OpenAIParserAdapter(env.OPENAI_API_KEY as string);
-    const useCase = new RetryFailedParsingLogsUseCase(parserService, db);
+    const retryUseCase = new RetryFailedParsingLogsUseCase(parserService, db);
 
-    ctx.waitUntil(useCase.execute());
+    const subscriptionRepo = new DrizzleSubscriptionRepository(db);
+    const alertRepo = new DrizzleAlertRepository(db);
+    const memberRepo = new DrizzleMemberRepository(db);
+    const paymentCardRepo = new DrizzlePaymentCardRepository(db);
+    // Note: MockNotificationService is used until Zalo OA / Telegram Bot messaging adapters are implemented in Epics 6 & 7
+    const notificationService = new MockNotificationService();
+    const alertUseCase = new ProcessTieredAlertsUseCase(
+      subscriptionRepo,
+      alertRepo,
+      notificationService,
+      memberRepo,
+      paymentCardRepo
+    );
+
+    ctx.waitUntil(Promise.all([retryUseCase.execute(), alertUseCase.execute()]));
   },
 };
