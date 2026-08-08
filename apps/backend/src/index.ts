@@ -12,8 +12,18 @@ import { createDbClient } from './core/db';
 import { globalErrorHandler, notFoundHandler } from './core/errors/error-handler';
 import { requestLogger } from './core/middleware/logger';
 
+import { telegramRouter } from './features/telegram/telegram.router';
+import {
+  TelegramClientAdapter,
+  TelegramNotificationAdapter,
+} from './features/telegram/adapters/telegram-client.adapter';
+
 export type Bindings = {
   DB: D1Database;
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_WEBHOOK_SECRET?: string;
+  TELEGRAM_FAMILY_GROUP_CHAT_ID?: string;
+  OPENAI_API_KEY?: string;
   [key: string]: unknown;
 };
 
@@ -21,6 +31,9 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // Middlewares
 app.use('*', requestLogger);
+
+// Mount feature routers
+app.route('/webhook/telegram', telegramRouter);
 
 // Global Error & 404 Handler
 app.onError(globalErrorHandler);
@@ -65,8 +78,15 @@ export default {
     const alertRepo = new DrizzleAlertRepository(db);
     const memberRepo = new DrizzleMemberRepository(db);
     const paymentCardRepo = new DrizzlePaymentCardRepository(db);
-    // Note: MockNotificationService is used until Zalo OA / Telegram Bot messaging adapters are implemented in Epics 6 & 7
-    const notificationService = new MockNotificationService();
+
+    const notificationService = env.TELEGRAM_BOT_TOKEN
+      ? new TelegramNotificationAdapter(
+          new TelegramClientAdapter(env.TELEGRAM_BOT_TOKEN as string),
+          db,
+          env.TELEGRAM_FAMILY_GROUP_CHAT_ID as string | undefined
+        )
+      : new MockNotificationService();
+
     const alertUseCase = new ProcessTieredAlertsUseCase(
       subscriptionRepo,
       alertRepo,

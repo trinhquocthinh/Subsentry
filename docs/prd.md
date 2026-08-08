@@ -2,12 +2,12 @@
 
 **Mạng Lưới An Toàn & Quản Lý Gói Dùng Thử Gia Đình** | _Cooperative Safety Net for Your Family's Digital Wallet_
 
-| Document Metadata    | Details                                 |
-| -------------------- | --------------------------------------- |
-| **Document Version** | 1.0                                     |
-| **Target Audience**  | Family & Micro-Group (< 10 Users)       |
-| **Primary Channels** | Zalo OA, Telegram Bot, Cloudflare Email |
-| **Status**           | Approved                                |
+| Document Metadata    | Details                           |
+| -------------------- | --------------------------------- |
+| **Document Version** | 1.0                               |
+| **Target Audience**  | Family & Micro-Group (< 10 Users) |
+| **Primary Channels** | Telegram Bot, Cloudflare Email    |
+| **Status**           | Approved                          |
 
 ---
 
@@ -60,7 +60,7 @@ Hệ thống thu thập thông tin Subscription một cách tự động và bá
   2. Luật này chỉ chuyển tiếp các thư chứa từ khóa nhạy cảm (_"trial"_, _"subscription"_, _"invoice"_, _"đăng ký"_, _"hóa đơn"_) gửi từ các tên miền merchant (như Apple, Google, Netflix, Spotify, Canva) về địa chỉ email chung của gia đình: `subs@yourfamily.com` [9].
   3. Cloudflare Email Routing tiếp nhận và kích hoạt Cloudflare Worker để xử lý nội dung.
 
-#### 💬 3.1.2 Bán tự động qua Chatbot (Zalo / Telegram Bot)
+#### 💬 3.1.2 Bán tự động qua Chatbot (Telegram Bot)
 
 - **Tính năng:** Cho phép thành viên chủ động gửi dữ liệu giao dịch cho Bot.
 - **Cơ chế:**
@@ -84,7 +84,7 @@ Hệ thống thu thập thông tin Subscription một cách tự động và bá
 #### 🟢 Tầng 1: Soft Alert (Mốc T-3 Ngày)
 
 - **Kịch bản:** 3 ngày trước khi dịch vụ hết hạn dùng thử hoặc gia hạn tiếp theo [8].
-- **Thực thi:** Bot gửi tin nhắn **riêng tư (Private)** qua Zalo hoặc Telegram tới chính **Subscriber** đăng ký gói đó [10].
+- **Thực thi:** Bot gửi tin nhắn **riêng tư (Private)** qua Telegram tới chính **Subscriber** đăng ký gói đó [10].
 - **Yêu cầu hành động:** Cung cấp hai nút tương tác nhanh:
   - **Keep (Giữ):** Xác nhận tiếp tục dùng, hệ thống cập nhật chu kỳ thanh toán tiếp theo và dừng cảnh báo cho chu kỳ này.
   - **Kill (Hủy):** Chuyển dịch vụ sang trạng thái `Pending Kill` và gửi kèm link hướng dẫn hủy trực tiếp [10].
@@ -92,14 +92,14 @@ Hệ thống thu thập thông tin Subscription một cách tự động và bá
 #### 🔴 Tầng 2: Red Alert (Mốc T-24 Giờ)
 
 - **Kịch bản:** Khi dịch vụ chỉ còn 24 giờ trước thời điểm trừ tiền, và **Subscriber không phản hồi** gì sau 48 giờ kể từ Soft Alert [6].
-- **Thực thi:** Bot tự động gửi tin nhắn báo động khẩn cấp vào **Nhóm Chat Gia Đình (Zalo Group hoặc Telegram Group)** [10].
+- **Thực thi:** Bot tự động gửi tin nhắn báo động khẩn cấp vào **Nhóm Chat Gia Đình (Telegram Group)** [10].
 - **Nội dung:** Tag trực tiếp **Card Owner** (Chủ thẻ) và **Subscriber** (Thành viên đăng ký) để hai bên nắm thông tin thực hiện khóa thẻ tạm thời trên ứng dụng ngân hàng hoặc hủy khẩn cấp dịch vụ trước khi bị trừ tiền [10].
 
 ---
 
 ### 📊 3.4 Giao Diện Quản Trị Gia Đình (Family Dashboard)
 
-- **Giải pháp:** Giao diện quản trị chính là **React SPA** triển khai trên **Cloudflare Pages**, nhúng trực tiếp vào **Zalo Mini App** và **Telegram Mini App** để thành viên xem danh sách subscription, gán chủ thẻ, và bấm Keep/Kill ngay trong app chat quen thuộc mà không cần đăng nhập lại [10]. **Google Sheets API** đóng vai trò dashboard cấu hình dự phòng dành cho thành viên lớn tuổi ít quen thao tác app; **Notion API** chỉ được cân nhắc tích hợp trong tương lai nếu Google Sheets không còn đáp ứng đủ nhu cầu vận hành.
+- **Giải pháp:** Giao diện quản trị chính là **React SPA** triển khai trên **Cloudflare Pages**, nhúng trực tiếp vào **Telegram Mini App** để thành viên xem danh sách subscription, gán chủ thẻ, và bấm Keep/Kill ngay trong app chat quen thuộc mà không cần đăng nhập lại [10]. **Google Sheets API** đóng vai trò dashboard cấu hình dự phòng dành cho thành viên lớn tuổi ít quen thao tác app; **Notion API** chỉ được cân nhắc tích hợp trong tương lai nếu Google Sheets không còn đáp ứng đủ nhu cầu vận hành.
 - **Tính năng:**
   - Đồng bộ 2 chiều (2-way Sync): Mọi biến động do Bot/SPA ghi nhận trên Cloudflare D1 sẽ tự động đẩy lên Google Sheets [10].
   - Cấu hình thủ công: Thành viên lớn tuổi có thể lên Google Sheets sửa ngày gia hạn, sửa số tiền, hoặc thêm các dịch vụ thanh toán tiền mặt bằng tay [11]. Cloudflare Worker định kỳ quét file mỗi ngày một lần để đồng bộ ngược lại Database D1 [10].
@@ -113,7 +113,7 @@ Hệ thống thu thập thông tin Subscription một cách tự động và bá
 
 - **Zero-Permission:** Tuyệt đối không yêu cầu quyền root máy, không cài app đọc trộm SMS hay can thiệp sâu vào thiết bị của các thành viên [9].
 - **Data Isolation & Chia sẻ dữ liệu có kiểm soát:** Dữ liệu gia đình lưu trữ chính trong cơ sở dữ liệu Cloudflare D1 thuộc tài khoản cá nhân của bạn. Nội dung biên lai/hóa đơn chỉ được gửi tới **OpenAI API** (bóc tách dữ liệu) và **Google Sheets API** (đồng bộ dashboard dự phòng) với vai trò bên xử lý được ủy quyền phục vụ đúng mục đích vận hành; dữ liệu không được bán hoặc chia sẻ cho bất kỳ bên thứ ba nào khác ngoài các nhà cung cấp dịch vụ nêu trên.
-- **API Secret Management:** Tất cả các API Key (OpenAI, Zalo OA Token, Telegram Bot Token) phải được mã hóa và lưu trữ an toàn trong biến môi trường của Cloudflare Workers.
+- **API Secret Management:** Tất cả các API Key (OpenAI, Telegram Bot Token) phải được mã hóa và lưu trữ an toàn trong biến môi trường của Cloudflare Workers.
 
 ### 💸 4.2 Chi Phí Vận Hành (Operating Cost)
 

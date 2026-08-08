@@ -45,10 +45,12 @@ describe('Subscription State Machine (FSM)', () => {
     ).toThrow(InvalidStateTransitionError);
   });
 
-  it('Ném InvalidStateTransitionError khi gọi action KEEP trên ACTIVE', () => {
-    expect(() =>
-      transitionSubscriptionState(SubscriptionStatus.ACTIVE, SubscriptionAction.KEEP)
-    ).toThrow(InvalidStateTransitionError);
+  it('Cho phép action KEEP trên ACTIVE giữ nguyên trạng thái ACTIVE', () => {
+    const nextStatus = transitionSubscriptionState(
+      SubscriptionStatus.ACTIVE,
+      SubscriptionAction.KEEP
+    );
+    expect(nextStatus).toBe(SubscriptionStatus.ACTIVE);
   });
 
   it('Ném InvalidStateTransitionError khi gọi action bất kỳ trực tiếp trên KILLED', () => {

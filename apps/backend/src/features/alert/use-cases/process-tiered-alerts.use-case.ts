@@ -80,6 +80,10 @@ export class ProcessTieredAlertsUseCase {
               triggeredAt: nowIso,
             });
             softAlertsSent++;
+          } else {
+            await this.alertRepo.update(alertRecord.id, {
+              status: 'FAILED',
+            });
           }
         }
       }
@@ -115,8 +119,7 @@ export class ProcessTieredAlertsUseCase {
               subscriptionId: sub.id,
               alertType: 'RED_T24',
               scheduledAt: nowIso,
-              status: 'SENT',
-              triggeredAt: nowIso,
+              status: 'SCHEDULED',
               response: 'PENDING',
             });
 
@@ -163,7 +166,15 @@ export class ProcessTieredAlertsUseCase {
             });
 
             if (sent) {
+              await this.alertRepo.update(alertRecord.id, {
+                status: 'SENT',
+                triggeredAt: nowIso,
+              });
               redAlertsSent++;
+            } else {
+              await this.alertRepo.update(alertRecord.id, {
+                status: 'FAILED',
+              });
             }
           }
         }

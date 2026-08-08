@@ -36,58 +36,9 @@ export default defineConfig({
 
 #### 2. Bộ Dữ Liệu Giả Lập Đầu Vào (Mock Payloads / Test Vectors)
 
-##### 2.1 Zalo OA Webhook Payloads (Zalo Bot)
+##### 2.1 Telegram Bot API Webhook Payloads (Telegram Bot)
 
-###### Kịch bản 2.1.1: Thành viên gửi tin nhắn SMS biến động số dư thô
-
-```json
-{
-  "event_name": "user_send_text",
-  "app_id": "1234567890",
-  "sender": {
-    "id": "zalo-user-id-con-ca-1"
-  },
-  "recipient": {
-    "id": "zalo-oa-id"
-  },
-  "message": {
-    "text": "TK 1903xxx123 tai Techcombank bi tru 250,000 VND luc 10:15 02/09/2026. ND: GD tu CANVA.COM.",
-    "msg_id": "msg_zalo_text_001"
-  },
-  "timestamp": 1788346500000
-}
-```
-
-###### Kịch bản 2.1.2: Thành viên gửi ảnh chụp màn hình hóa đơn (Biên lai)
-
-```json
-{
-  "event_name": "user_send_image",
-  "app_id": "1234567890",
-  "sender": {
-    "id": "zalo-user-id-con-ca-1"
-  },
-  "recipient": {
-    "id": "zalo-oa-id"
-  },
-  "message": {
-    "attachments": [
-      {
-        "type": "image",
-        "payload": {
-          "url": "https://img.zalo.me/attachments/raw_invoice_canva_screenshot.png"
-        }
-      }
-    ],
-    "msg_id": "msg_zalo_img_002"
-  },
-  "timestamp": 1788346600000
-}
-```
-
-##### 2.2 Telegram Bot API Webhook Payloads (Telegram Bot)
-
-###### Kịch bản 2.2.1: Thành viên tương tác nút bấm Inline Keyboard (Callback Query)
+###### Kịch bản 2.1.1: Thành viên tương tác nút bấm Inline Keyboard (Callback Query)
 
 ```json
 {
@@ -111,7 +62,7 @@ export default defineConfig({
 }
 ```
 
-##### 2.3 Cloudflare Email Routing Webhook Payload
+##### 2.2 Cloudflare Email Routing Webhook Payload
 
 Dữ liệu Email chuyển tiếp tự động nhận từ Gmail thông qua Cloudflare Email Routing và chuyển đổi thành HTTP POST:
 

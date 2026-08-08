@@ -38,7 +38,7 @@ _Từ nay, chỉ những email chứa hóa đơn hoặc thông báo đăng ký d
 
 ---
 
-#### 💬 3. Hướng Dẫn Sử Dụng Chatbot Trên Zalo / Telegram
+#### 💬 3. Hướng Dẫn Sử Dụng Chatbot Trên Telegram
 
 ##### 🔵 Kết nối lần đầu với Telegram Bot (chỉ làm 1 lần)
 
@@ -50,7 +50,7 @@ Bên cạnh việc chuyển tiếp email tự động, cả nhà có thể trự
 
 ##### 📸 Cách 1: Chụp ảnh màn hình biên lai
 
-Khi cả nhà đăng ký thành công một dịch vụ (ví dụ mua Spotify hoặc đăng ký dùng thử Canva), hãy chụp màn hình biên lai xác nhận (có hiển thị tên dịch vụ, số tiền và ngày hết hạn) rồi gửi thẳng bức ảnh đó vào cuộc hội thoại với **Zalo Bot** hoặc **Telegram Bot** của gia đình.
+Khi cả nhà đăng ký thành công một dịch vụ (ví dụ mua Spotify hoặc đăng ký dùng thử Canva), hãy chụp màn hình biên lai xác nhận (có hiển thị tên dịch vụ, số tiền và ngày hết hạn) rồi gửi thẳng bức ảnh đó vào cuộc hội thoại với **Telegram Bot** của gia đình.
 
 ##### ✍️ Cách 2: Copy tin nhắn biến động số dư ngân hàng
 
@@ -67,14 +67,14 @@ _Hệ thống AI thông minh của gia đình sẽ tự động đọc hiểu �
 ##### 🟢 Tầng 1: Nhắc nhở nhẹ nhàng riêng tư (Mốc T-3 ngày)
 
 - **Thời điểm**: 3 ngày trước khi gói dùng thử hoặc dịch vụ của bạn tự động gia hạn trừ tiền.
-- **Thực thi**: Bot sẽ nhắn tin **riêng tư** cho chính bạn trên Zalo/Telegram kèm hai nút bấm cực kỳ trực quan:
+- **Thực thi**: Bot sẽ nhắn tin **riêng tư** cho chính bạn trên Telegram kèm hai nút bấm cực kỳ trực quan:
   - **Keep (Giữ)**: Bạn bấm nút này nếu vẫn muốn tiếp tục sử dụng ứng dụng. Hệ thống sẽ tắt cảnh báo và tiếp tục đếm ngược chu kỳ tiếp theo.
   - **Kill (Hủy)**: Bạn bấm nút này nếu không muốn dùng nữa. Bot sẽ gửi kèm link hướng dẫn chi tiết cách hủy dịch vụ của Apple, Netflix hay Spotify... để bạn tự vào hủy cực nhanh.
 
 ##### 🔴 Tầng 2: Báo động đỏ gia đình (Mốc T-24 giờ)
 
 - **Thời điểm**: Chỉ còn 24 giờ trước thời điểm trừ tiền, và **bạn quên phản hồi** tin nhắn nhắc nhở riêng tư ở Tầng 1.
-- **Thực thi**: Bot sẽ tự động gửi một thông báo khẩn cấp vào **Nhóm Chat Gia Đình** chung trên Zalo/Telegram, đồng thời tag tên bạn và **Chủ thẻ thanh toán** (ví dụ: Bố hoặc Mẹ) kèm lời nhắn:
+- **Thực thi**: Bot sẽ tự động gửi một thông báo khẩn cấp vào **Nhóm Chat Gia Đình** chung trên Telegram, đồng thời tag tên bạn và **Chủ thẻ thanh toán** (ví dụ: Bố hoặc Mẹ) kèm lời nhắn:
   _"Thẻ [Visa Techcombank - Bố] sắp bị trừ [250,000 VNĐ] cho dịch vụ [Canva] đăng ký bởi [Con]. Con chưa phản hồi xác nhận. Bố/mẹ có muốn chủ động khóa thẻ tạm thời trên app ngân hàng để tránh bị trừ tiền oan không?"_
 
 Cơ chế này giúp bảo vệ tuyệt đối ví tiền của cả gia đình chúng ta, tránh mọi thất thoát tài chính không đáng có một cách hoàn toàn tự động và rảnh tay!

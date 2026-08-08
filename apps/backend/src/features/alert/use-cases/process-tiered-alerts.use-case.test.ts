@@ -204,4 +204,38 @@ describe('ProcessTieredAlertsUseCase Tests', () => {
     expect(notificationService.sentSoftAlerts.length).toBe(0);
     expect(notificationService.sentRedAlerts.length).toBe(0);
   });
+
+  it('Cập nhật trạng thái alert thành FAILED khi notificationService gửi thất bại', async () => {
+    const sub = await subRepo.create({
+      merchantName: 'Adobe Cloud',
+      amount: 400000,
+      currency: 'VND',
+      subscriberId: memberId,
+      status: SubscriptionStatus.ACTIVE,
+      billingCycle: BillingCycle.MONTHLY,
+      nextBillingDate: '2026-08-07',
+      confidenceScore: 0.9,
+      isMustKeep: false,
+    });
+
+    const failingNotificationService = {
+      sendSoftAlert: async () => false,
+      sendRedAlert: async () => false,
+    };
+
+    const failingUseCase = new ProcessTieredAlertsUseCase(
+      subRepo,
+      alertRepo,
+      failingNotificationService,
+      memberRepo,
+      paymentCardRepo
+    );
+
+    const result = await failingUseCase.execute('2026-08-04');
+
+    expect(result.softAlertsSent).toBe(0);
+    const createdAlert = await alertRepo.findLatestAlertForCycle(sub.id, 'SOFT_T3');
+    expect(createdAlert).not.toBeNull();
+    expect(createdAlert?.status).toBe('FAILED');
+  });
 });

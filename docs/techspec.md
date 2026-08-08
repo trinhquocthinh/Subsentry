@@ -24,7 +24,7 @@ Hệ thống Subsentry sử dụng kiến trúc **Serverless Monorepo** chạy h
 ```
                                   ┌──────────────────────────────────────────┐
                                   │           CLOUDFLARE PAGES               │
-                                  │  (React 18, Tailwind, Zalo Mini App SDK)  │
+                                  │    (React 18, Tailwind, Telegram Web App SDK)   │
                                   └────────────────────┬─────────────────────┘
                                                        │ (HTTPS JSON API)
                                                        ▼
@@ -32,10 +32,10 @@ Hệ thống Subsentry sử dụng kiến trúc **Serverless Monorepo** chạy h
 │ Cloudflare Email ├─────────────►│             CLOUDFLARE WORKERS           │
 │  Routing Webhook │              │        (Hono API Engine, Router)         │
 └──────────────────┘              └──────┬─────────────┬─────────────┬───────┘
-                                         │             │             │
-┌──────────────────┐                     │             │             │
-│  Zalo OA & TG    │◄───────────────────┘             │             │
-│  Bot Webhook     │ (Push Messaging API)              │             │
+                                         │             │
+┌──────────────────┐                     │             │
+│  Telegram Bot    │◄────────────────────┘             │
+│  Webhook         │ (Push Messaging API)              │
 └──────────────────┘                                   ▼             ▼
                                                 ┌─────────────┐┌─────────────┐
                                                 │CLOUDFLARE D1││ OPENAI API  │
@@ -45,10 +45,8 @@ Hệ thống Subsentry sử dụng kiến trúc **Serverless Monorepo** chạy h
 
 ### 1.1 Chi Tiết Các Thành Phần Hạ Tầng (Infrastructure)
 
-- **Cloudflare Workers (Backend):** Engine chính của hệ thống. Nhận dữ liệu webhook từ Zalo, Telegram, Email Routing và định tuyến xử lý. Vận hành theo cơ chế Serverless Edge Computing.
-- **Cloudflare Pages (Frontend):** Hosting và CDN cho ứng dụng React SPA. SPA này đóng vai trò:
-  1. **Zalo Mini App (ZMA):** Tích hợp sâu vào ứng dụng Zalo của thành viên để cung cấp giao diện quản lý Subscription trực tiếp mà không cần mở trình duyệt ngoài.
-  2. **Telegram Mini App (Web App):** Khi thành viên mở Dashboard từ Telegram Bot, giao diện SPA được render trực tiếp trong Telegram thông qua Telegram Web App SDK, không cần rời khỏi app chat.
+- **Cloudflare Workers (Backend):** Engine chính của hệ thống. Nhận dữ liệu webhook từ Telegram, Email Routing và định tuyến xử lý. Vận hành theo cơ chế Serverless Edge Computing.
+- **Cloudflare Pages (Frontend):** Hosting và CDN cho ứng dụng React SPA. SPA này đóng vai trò **Telegram Mini App (Web App)**: khi thành viên mở Dashboard từ Telegram Bot, giao diện SPA được render trực tiếp trong Telegram thông qua Telegram Web App SDK, không cần rời khỏi app chat.
 - **Cloudflare D1 (Database):** Cơ sở dữ liệu quan hệ SQLite chạy trực tiếp trên các Node Edge, đảm bảo thời gian truy vấn dữ liệu từ Việt Nam dưới 15ms.
 
 ---
@@ -80,7 +78,7 @@ Hệ thống Subsentry sử dụng kiến trúc **Serverless Monorepo** chạy h
 │   │   ├── tests                   # Vitest unit & integration tests
 │   │   ├── wrangler.toml           # Cấu hình deploy Cloudflare Worker
 │   │   └── package.json
-│   └── frontend                    # React SPA (Zalo Mini App & Telegram Mini App)
+│   └── frontend                    # React SPA (Telegram Mini App)
 │       ├── src
 │       │   ├── components          # UI Components (shadcn/ui, Tailwind CSS)
 │       │   ├── hooks               # Custom React Hooks

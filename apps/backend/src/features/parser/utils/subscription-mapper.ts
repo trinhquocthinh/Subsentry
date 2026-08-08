@@ -12,6 +12,7 @@ export function mapExtractionToSubscriptionInsertValues(
     billingCycle: extraction.billingCycle,
     status: extraction.isTrial ? SubscriptionStatus.TRIAL : SubscriptionStatus.ACTIVE,
     nextBillingDate: extraction.nextBillingDate,
+    confidenceScore: extraction.confidenceScore,
     ...(subscriberId !== undefined ? { subscriberId } : {}),
   };
 }

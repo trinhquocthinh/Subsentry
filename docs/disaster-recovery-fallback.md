@@ -14,7 +14,7 @@ Khi hệ thống không thể kết nối tới API OpenAI hoặc tài khoản A
 
 ##### 1.1 Triệu chứng (Symptoms)
 
-- Thành viên gửi biên lai vào Zalo/Telegram Bot nhưng không nhận được phản hồi, hoặc nhận được tin nhắn báo lỗi hệ thống bóc tách.
+- Thành viên gửi biên lai vào Telegram Bot nhưng không nhận được phản hồi, hoặc nhận được tin nhắn báo lỗi hệ thống bóc tách.
 - Nhật ký `parsing_logs` ghi nhận trạng thái giao dịch xử lý thất bại (`status = 'FAILED'`).
 
 ##### 1.2 Giải pháp khắc phục tự động (Automated Fallback)
@@ -30,21 +30,21 @@ Trong mã nguồn Cloudflare Worker, thực hiện cơ chế bọc khối lệnh
 
 #### 2. Sự Cố 2: Lỗi Webhook Không Phản Hồi Đúng Hạn (Webhook Timeout Handling)
 
-Zalo OA và Telegram Bot API yêu cầu phản hồi HTTP `200 OK` cực kỳ nhanh (thường trong vòng 2 - 3 giây) sau khi gửi webhook payload. Nếu Cloudflare Worker tốn quá nhiều thời gian để gọi API OpenAI bóc tách hình ảnh (thao tác này có thể mất từ 3 - 5 giây), Zalo/Telegram Server sẽ coi là kết nối bị lỗi và tự động gửi lại (retry) nhiều lần, gây ra hiện tượng trùng lặp yêu cầu và lãng phí chi phí gọi API OpenAI.
+Telegram Bot API yêu cầu phản hồi HTTP `200 OK` cực kỳ nhanh (thường trong vòng 2 - 3 giây) sau khi gửi webhook payload. Nếu Cloudflare Worker tốn quá nhiều thời gian để gọi API OpenAI bóc tách hình ảnh (thao tác này có thể mất từ 3 - 5 giây), Telegram Server sẽ coi là kết nối bị lỗi và tự động gửi lại (retry) nhiều lần, gây ra hiện tượng trùng lặp yêu cầu và lãng phí chi phí gọi API OpenAI.
 
 ##### 2.1 Giải pháp thiết kế kỹ thuật (Non-Blocking Webhook)
 
 Áp dụng cơ chế bất đồng bộ hóa xử lý (Async Execution) sử dụng hàm `ctx.waitUntil` có sẵn của Cloudflare Workers:
 
-1.  **Nhận & Xác thực**: Worker tiếp nhận Webhook POST từ Zalo/Telegram.
-2.  **Trả về HTTP 200 ngay lập tức**: Phản hồi ngay lập tức cho Zalo/Telegram Server mã trạng thái `200 OK` để xác nhận đã nhận dữ liệu thành công.
+1.  **Nhận & Xác thực**: Worker tiếp nhận Webhook POST từ Telegram.
+2.  **Trả về HTTP 200 ngay lập tức**: Phản hồi ngay lập tức cho Telegram Server mã trạng thái `200 OK` để xác nhận đã nhận dữ liệu thành công.
 3.  **Xử lý ngầm (Background Processing)**: Đẩy tác vụ gọi OpenAI API, ghi nhận cơ sở dữ liệu D1 và gửi tin nhắn thông báo cho người dùng vào luồng chạy ngầm bằng `ctx.waitUntil()`:
     ```typescript
-    app.post('/webhook/zalo', async (c) => {
+    app.post('/webhook/telegram', async (c) => {
       const payload = await c.req.json();
 
       // Chạy ngầm tiến trình bóc tách để trả về kết quả HTTP 200 ngay lập tức
-      c.executionCtx.waitUntil(processZaloWebhookInBackground(payload, c.env));
+      c.executionCtx.waitUntil(processTelegramWebhookInBackground(payload, c.env));
 
       return c.text('OK', 200);
     });

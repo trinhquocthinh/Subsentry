@@ -141,8 +141,6 @@ compatibility_date = "2026-08-01"
 
 [vars]
 ENVIRONMENT = "production"
-# Định cấu hình các biến công khai
-ZALO_OA_ID = "YOUR_ZALO_OA_ID"
 
 [[d1_databases]]
 binding = "DB" # Ràng buộc gọi trong code: env.DB
@@ -185,10 +183,9 @@ Không bao giờ được lưu các khóa API, token bí mật trực tiếp tro
 ##### 5.1 Các Khóa Bảo Mật Cần Thiết
 
 - `OPENAI_API_KEY`: Khóa API của OpenAI sử dụng mô hình GPT-4o-mini.
-- `ZALO_ACCESS_TOKEN`: Token dùng để gọi API gửi tin nhắn chủ động tới thành viên qua Zalo OA.
-- `ZALO_APP_SECRET`: Dùng để xác minh chữ ký HMAC (`X-ZEvent-Signature`) của webhook Zalo OA, chống giả mạo payload.
 - `TELEGRAM_BOT_TOKEN`: Token dùng để gọi Telegram Bot API gửi tin nhắn chủ động và nhận cập nhật.
 - `TELEGRAM_WEBHOOK_SECRET`: Chuỗi bí mật thiết lập khi gọi `setWebhook`, dùng để xác thực header `X-Telegram-Bot-Api-Secret-Token` của mọi webhook Telegram gửi tới.
+- `TELEGRAM_FAMILY_GROUP_CHAT_ID`: Chat ID của nhóm Telegram gia đình, dùng để gửi Red Alert trực tiếp vào nhóm kèm tag Subscriber + Card Owner.
 - `GOOGLE_SHEETS_API_KEY`: Khóa tích hợp Google API hoặc Token OAuth để đồng bộ Google Sheet.
 - `ADMIN_API_TOKEN`: Token bảo vệ các endpoint quản trị nội bộ (ví dụ `/api/admin/reconcile-sync`).
 
@@ -198,10 +195,9 @@ Chạy các dòng lệnh sau trên Terminal để thiết lập bảo mật:
 
 ```bash
 wrangler secret put OPENAI_API_KEY
-wrangler secret put ZALO_ACCESS_TOKEN
-wrangler secret put ZALO_APP_SECRET
 wrangler secret put TELEGRAM_BOT_TOKEN
 wrangler secret put TELEGRAM_WEBHOOK_SECRET
+wrangler secret put TELEGRAM_FAMILY_GROUP_CHAT_ID
 wrangler secret put GOOGLE_SHEETS_API_KEY
 wrangler secret put ADMIN_API_TOKEN
 ```
@@ -273,3 +269,32 @@ jobs:
           workingDirectory: 'apps/frontend'
           command: pages deploy dist --project-name=subsentry-frontend
 ```
+
+---
+
+#### 7. Đăng Ký Webhook Telegram (`setWebhook`)
+
+Sau khi deploy Worker và tạo bot qua **@BotFather** (lệnh `/newbot` để lấy `TELEGRAM_BOT_TOKEN`), cần đăng ký một lần webhook trỏ Telegram Server về đúng route `/webhook/telegram`. Dùng script có sẵn tại [apps/backend/scripts/set-telegram-webhook.sh](../apps/backend/scripts/set-telegram-webhook.sh):
+
+```bash
+TELEGRAM_BOT_TOKEN=xxx \
+TELEGRAM_WEBHOOK_SECRET=yyy \
+WORKER_URL=https://subsentry-backend.<subdomain>.workers.dev \
+  ./apps/backend/scripts/set-telegram-webhook.sh
+```
+
+Hoặc gọi trực tiếp bằng `curl` tương đương:
+
+```bash
+curl -X POST "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://<worker-domain>/webhook/telegram", "secret_token": "<TELEGRAM_WEBHOOK_SECRET>"}'
+```
+
+Kiểm tra lại trạng thái đăng ký bất kỳ lúc nào bằng:
+
+```bash
+curl "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getWebhookInfo"
+```
+
+Cuối cùng, thêm bot vào **Nhóm Chat Gia Đình** trên Telegram và lấy `chat_id` của nhóm (ví dụ qua `getUpdates` hoặc bot `@userinfobot`) để cấu hình secret `TELEGRAM_FAMILY_GROUP_CHAT_ID` — giá trị này được `TelegramNotificationAdapter.sendRedAlert()` dùng để gửi Red Alert trực tiếp vào nhóm kèm tag Subscriber + Card Owner.

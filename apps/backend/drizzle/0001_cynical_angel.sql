@@ -10,7 +10,7 @@ CREATE TABLE `__new_alerts` (
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	FOREIGN KEY (`subscription_id`) REFERENCES `subscriptions`(`id`) ON UPDATE no action ON DELETE cascade,
 	CONSTRAINT "alert_type_check" CHECK("__new_alerts"."alert_type" IN ('SOFT_T3', 'RED_T24')),
-	CONSTRAINT "alert_status_check" CHECK("__new_alerts"."status" IN ('SCHEDULED', 'SENT', 'CANCELLED')),
+	CONSTRAINT "alert_status_check" CHECK("__new_alerts"."status" IN ('SCHEDULED', 'SENT', 'CANCELLED', 'FAILED')),
 	CONSTRAINT "alert_response_check" CHECK("__new_alerts"."response" IN ('PENDING', 'KEEP', 'KILL'))
 );
 --> statement-breakpoint

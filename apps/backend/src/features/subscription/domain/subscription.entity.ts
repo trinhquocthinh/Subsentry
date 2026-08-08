@@ -71,6 +71,9 @@ export function transitionSubscriptionState(
       break;
 
     case SubscriptionStatus.ACTIVE:
+      if (action === SubscriptionAction.KEEP) {
+        return SubscriptionStatus.ACTIVE;
+      }
       if (action === SubscriptionAction.KILL) {
         return SubscriptionStatus.PENDING_KILL;
       }

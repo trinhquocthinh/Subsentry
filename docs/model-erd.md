@@ -14,7 +14,7 @@ Dưới đây là sơ đồ thực thể quan hệ (ERD) chi tiết, được ch
 erDiagram
     MEMBERS {
         integer id PK
-        varchar zalo_user_id "Nullable - Định danh Zalo"
+        varchar zalo_user_id "Nullable - Legacy, không còn sử dụng (Zalo đã ngừng, xem Epic 7 master-plan.md)"
         varchar telegram_chat_id "Nullable - Định danh Telegram"
         varchar display_name "Tên hiển thị thành viên"
         varchar role "ADMIN | SUBSCRIBER | CARD_OWNER"
@@ -60,7 +60,7 @@ erDiagram
 
     PARSING_LOGS {
         integer id PK
-        varchar source "EMAIL | CHAT_ZALO | CHAT_TG"
+        varchar source "EMAIL | CHAT_TG (CHAT_ZALO: legacy, không còn dùng)"
         varchar sender_id "Định danh người gửi thô"
         text raw_content "Nội dung email hoặc link ảnh thô"
         text parsed_json "Dữ liệu bóc tách thô từ AI"
@@ -85,14 +85,14 @@ erDiagram
 
 Lưu trữ thông tin định danh và phân quyền của 10 thành viên trong gia đình.
 
-| Tên trường (Column) | Kiểu dữ liệu   | Ràng buộc                   | Mô tả                                                      |
-| :------------------ | :------------- | :-------------------------- | :--------------------------------------------------------- |
-| `id`                | `INTEGER`      | `PRIMARY KEY AUTOINCREMENT` | Khóa chính tự tăng                                         |
-| `zalo_user_id`      | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | ID người dùng Zalo phục vụ giao tiếp qua Zalo OA           |
-| `telegram_chat_id`  | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | Chat ID định danh người dùng trên Telegram                 |
-| `display_name`      | `VARCHAR(100)` | `NOT NULL`                  | Tên gọi thân mật của thành viên trong nhà                  |
-| `role`              | `VARCHAR(20)`  | `NOT NULL`                  | Vai trò: `'ADMIN'` (Bố/Mẹ), `'SUBSCRIBER'`, `'CARD_OWNER'` |
-| `created_at`        | `DATETIME`     | `DEFAULT CURRENT_TIMESTAMP` | Thời điểm đăng ký vào hệ thống                             |
+| Tên trường (Column) | Kiểu dữ liệu   | Ràng buộc                   | Mô tả                                                                                                                                     |
+| :------------------ | :------------- | :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                | `INTEGER`      | `PRIMARY KEY AUTOINCREMENT` | Khóa chính tự tăng                                                                                                                        |
+| `zalo_user_id`      | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | **[Legacy]** ID Zalo, không còn sử dụng sau khi Epic 6 Zalo OA bị ngừng, thay bằng Telegram (xem [master-plan.md](master-plan.md) Epic 7) |
+| `telegram_chat_id`  | `VARCHAR(255)` | `UNIQUE`, `NULLABLE`        | Chat ID định danh người dùng trên Telegram                                                                                                |
+| `display_name`      | `VARCHAR(100)` | `NOT NULL`                  | Tên gọi thân mật của thành viên trong nhà                                                                                                 |
+| `role`              | `VARCHAR(20)`  | `NOT NULL`                  | Vai trò: `'ADMIN'` (Bố/Mẹ), `'SUBSCRIBER'`, `'CARD_OWNER'`                                                                                |
+| `created_at`        | `DATETIME`     | `DEFAULT CURRENT_TIMESTAMP` | Thời điểm đăng ký vào hệ thống                                                                                                            |
 
 ##### 2.2 Bảng `payment_cards`
 
@@ -149,16 +149,16 @@ Quản lý lập lịch và lưu trữ lịch sử phản hồi thông báo củ
 
 Nhật ký bóc tách dữ liệu từ AI để lưu trữ dữ liệu thô phục vụ tối ưu Prompt và kiểm toán lỗi.
 
-| Tên trường (Column) | Kiểu dữ liệu   | Ràng buộc                   | Mô tả                                                           |
-| :------------------ | :------------- | :-------------------------- | :-------------------------------------------------------------- |
-| `id`                | `INTEGER`      | `PRIMARY KEY AUTOINCREMENT` | Khóa chính tự tăng                                              |
-| `source`            | `VARCHAR(20)`  | `NOT NULL`                  | Nguồn: `'EMAIL'`, `'CHAT_ZALO'`, `'CHAT_TG'`                    |
-| `sender_id`         | `VARCHAR(255)` | `NOT NULL`                  | Zalo ID, Telegram Chat ID, hoặc email gửi thô để định danh      |
-| `raw_content`       | `TEXT`         | `NOT NULL`                  | Email text thô hoặc URL ảnh biên lai lưu trên Cloudflare Images |
-| `parsed_json`       | `TEXT`         | `NULLABLE`                  | Kết quả chuỗi JSON string nhận về từ GPT-4o-mini                |
-| `confidence_score`  | `REAL`         | `DEFAULT 0.00`              | Điểm số tự tin của mô hình                                      |
-| `status`            | `VARCHAR(20)`  | `NOT NULL`                  | Trạng thái lưu trữ: `'SUCCESS'`, `'LOW_CONFIDENCE'`, `'FAILED'` |
-| `created_at`        | `DATETIME`     | `DEFAULT CURRENT_TIMESTAMP` | Thời điểm xử lý giao dịch                                       |
+| Tên trường (Column) | Kiểu dữ liệu   | Ràng buộc                   | Mô tả                                                                                          |
+| :------------------ | :------------- | :-------------------------- | :--------------------------------------------------------------------------------------------- |
+| `id`                | `INTEGER`      | `PRIMARY KEY AUTOINCREMENT` | Khóa chính tự tăng                                                                             |
+| `source`            | `VARCHAR(20)`  | `NOT NULL`                  | Nguồn: `'EMAIL'`, `'CHAT_TG'` (`'CHAT_ZALO'` là giá trị legacy, không còn được tạo mới)        |
+| `sender_id`         | `VARCHAR(255)` | `NOT NULL`                  | Telegram Chat ID hoặc email gửi thô để định danh (giá trị Zalo ID cũ chỉ còn ở dữ liệu legacy) |
+| `raw_content`       | `TEXT`         | `NOT NULL`                  | Email text thô hoặc URL ảnh biên lai lưu trên Cloudflare Images                                |
+| `parsed_json`       | `TEXT`         | `NULLABLE`                  | Kết quả chuỗi JSON string nhận về từ GPT-4o-mini                                               |
+| `confidence_score`  | `REAL`         | `DEFAULT 0.00`              | Điểm số tự tin của mô hình                                                                     |
+| `status`            | `VARCHAR(20)`  | `NOT NULL`                  | Trạng thái lưu trữ: `'SUCCESS'`, `'LOW_CONFIDENCE'`, `'FAILED'`                                |
+| `created_at`        | `DATETIME`     | `DEFAULT CURRENT_TIMESTAMP` | Thời điểm xử lý giao dịch                                                                      |
 
 ---
 

@@ -18,25 +18,25 @@
 
 ## 1. Bảng Tổng Quan Các Epic (Roadmap Summary)
 
-| #   | Epic                                                   | Phụ thuộc          | Ưu tiên | Tài liệu tham chiếu                                                              |
-| --- | ------------------------------------------------------ | ------------------ | ------- | -------------------------------------------------------------------------------- |
-| 0   | Chuẩn bị nền tảng (Bootstrap)                          | —                  | 🔴      | [setup-and-ops-guide.md](setup-and-ops-guide.md)                                 |
-| 1   | Lớp dữ liệu (Data Layer)                               | Epic 0             | 🔴      | [model-erd.md](model-erd.md)                                                     |
-| 2   | Core Architecture & Shared Kernel                      | Epic 0, 1          | 🔴      | [techspec.md](techspec.md)                                                       |
-| 3   | Feature: AI Parser                                     | Epic 2             | 🔴      | [sdd.md](sdd.md)                                                                 |
-| 4   | Feature: Subscription State Machine                    | Epic 2, 3          | 🔴      | [sdd.md](sdd.md), [business-rules.md](business-rules.md)                         |
-| 5   | Feature: Tiered Alerts                                 | Epic 4             | 🔴      | [business-rules.md](business-rules.md), [model-flowchart.md](model-flowchart.md) |
-| 6   | Tích hợp Zalo OA                                       | Epic 3, 4          | 🔴      | [sdd.md](sdd.md)                                                                 |
-| 7   | Tích hợp Telegram Bot                                  | Epic 3, 4          | 🟡      | [sdd.md](sdd.md)                                                                 |
-| 8   | Tích hợp Cloudflare Email Routing                      | Epic 3             | 🔴      | [model-c4.md](model-c4.md)                                                       |
-| 9   | Đồng bộ Google Sheets (2-way)                          | Epic 1, 4          | 🟡      | [business-rules.md](business-rules.md)                                           |
-| 10  | Admin & Ops Endpoint                                   | Epic 9             | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
-| 11  | Frontend React SPA (Zalo Mini App / Telegram Mini App) | Epic 6, 7          | 🟡      | [techspec.md](techspec.md), [model-c4.md](model-c4.md)                           |
-| 12  | Bảo mật & Tuân thủ                                     | Epic 6, 7, 8, 10   | 🔴      | [sdd.md](sdd.md) §4, [business-rules.md](business-rules.md) BR-09                |
-| 13  | Testing & Quality Gates                                | Song song mọi Epic | 🔴      | [test-cases-specification.md](test-cases-specification.md)                       |
-| 14  | Disaster Recovery & Backup                             | Epic 1, 9          | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
-| 15  | Family Onboarding & Go-Live                            | Tất cả Epic trên   | 🔴      | [family-onboarding-guide.md](family-onboarding-guide.md)                         |
-| 16  | Vận hành & Cải tiến liên tục                           | Sau Go-Live        | 🟢      | [prd.md](prd.md), [problem-definition.md](problem-definition.md)                 |
+| #   | Epic                                        | Phụ thuộc          | Ưu tiên | Tài liệu tham chiếu                                                              |
+| --- | ------------------------------------------- | ------------------ | ------- | -------------------------------------------------------------------------------- |
+| 0   | Chuẩn bị nền tảng (Bootstrap)               | —                  | 🔴      | [setup-and-ops-guide.md](setup-and-ops-guide.md)                                 |
+| 1   | Lớp dữ liệu (Data Layer)                    | Epic 0             | 🔴      | [model-erd.md](model-erd.md)                                                     |
+| 2   | Core Architecture & Shared Kernel           | Epic 0, 1          | 🔴      | [techspec.md](techspec.md)                                                       |
+| 3   | Feature: AI Parser                          | Epic 2             | 🔴      | [sdd.md](sdd.md)                                                                 |
+| 4   | Feature: Subscription State Machine         | Epic 2, 3          | 🔴      | [sdd.md](sdd.md), [business-rules.md](business-rules.md)                         |
+| 5   | Feature: Tiered Alerts                      | Epic 4             | 🔴      | [business-rules.md](business-rules.md), [model-flowchart.md](model-flowchart.md) |
+| 6   | ~~Tích hợp Zalo OA~~ (đã ngừng, xem Epic 7) | Epic 3, 4          | ⚫      | [sdd.md](sdd.md)                                                                 |
+| 7   | Tích hợp Telegram Bot                       | Epic 3, 4          | 🔴      | [sdd.md](sdd.md)                                                                 |
+| 8   | Tích hợp Cloudflare Email Routing           | Epic 3             | 🔴      | [model-c4.md](model-c4.md)                                                       |
+| 9   | Đồng bộ Google Sheets (2-way)               | Epic 1, 4          | 🟡      | [business-rules.md](business-rules.md)                                           |
+| 10  | Admin & Ops Endpoint                        | Epic 9             | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
+| 11  | Frontend React SPA (Telegram Mini App)      | Epic 7             | 🟡      | [techspec.md](techspec.md), [model-c4.md](model-c4.md)                           |
+| 12  | Bảo mật & Tuân thủ                          | Epic 7, 8, 10      | 🔴      | [sdd.md](sdd.md) §4, [business-rules.md](business-rules.md) BR-09                |
+| 13  | Testing & Quality Gates                     | Song song mọi Epic | 🔴      | [test-cases-specification.md](test-cases-specification.md)                       |
+| 14  | Disaster Recovery & Backup                  | Epic 1, 9          | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
+| 15  | Family Onboarding & Go-Live                 | Tất cả Epic trên   | 🔴      | [family-onboarding-guide.md](family-onboarding-guide.md)                         |
+| 16  | Vận hành & Cải tiến liên tục                | Sau Go-Live        | 🟢      | [prd.md](prd.md), [problem-definition.md](problem-definition.md)                 |
 
 ---
 
@@ -73,11 +73,12 @@
 
 - [x] 0.4.1 `wrangler secret put OPENAI_API_KEY`
 
-- [x] 0.4.2 `wrangler secret put ZALO_ACCESS_TOKEN`
-- [x] 0.4.3 `wrangler secret put ZALO_APP_SECRET` (dùng để verify chữ ký webhook — xem [sdd.md](sdd.md) §4.1)
+- [x] ~~0.4.2 `wrangler secret put ZALO_ACCESS_TOKEN`~~ → không còn cần dùng (Zalo đã ngừng).
+- [x] ~~0.4.3 `wrangler secret put ZALO_APP_SECRET`~~ → không còn cần dùng (Zalo đã ngừng).
 - [x] 0.4.4 `wrangler secret put TELEGRAM_BOT_TOKEN`
 - [x] 0.4.5 `wrangler secret put TELEGRAM_WEBHOOK_SECRET` (xem [sdd.md](sdd.md) §4.2)
-- [x] 0.4.6 `wrangler secret put GOOGLE_SHEETS_API_KEY`
+- [x] 0.4.6 `wrangler secret put TELEGRAM_FAMILY_GROUP_CHAT_ID` (dùng cho Red Alert gửi vào nhóm gia đình)
+- [x] 0.4.7 `wrangler secret put GOOGLE_SHEETS_API_KEY`
 - [x] 0.4.7 `wrangler secret put ADMIN_API_TOKEN` (bảo vệ endpoint `/api/admin/reconcile-sync`)
 - [x] 0.4.8 Ghi chú toàn bộ secrets vào trình quản lý mật khẩu cá nhân (KHÔNG commit vào git).
 
@@ -276,40 +277,35 @@
 
 ---
 
-## Epic 6 — Tích Hợp Zalo OA 🔴
+## Epic 6 — Tích Hợp Zalo OA 🔴 (Đã ngừng — thay thế bằng Epic 7 Telegram Bot)
+
+> ⚠️ **Quyết định kiến trúc:** Epic 6 bị bế tắc bởi giới hạn nền tảng thật sự của Zalo OA (xác minh doanh nghiệp cho Official Account, không có API gửi Group Chat, cửa sổ nhắn tin chủ động 7 ngày). Toàn bộ code Zalo (`features/zalo/`) đã được gỡ bỏ và thay thế hoàn toàn bằng Epic 7 — Telegram Bot, vốn đã được thiết kế sẵn làm kênh song song ngay từ đầu (xem cột `telegram_chat_id` trong [model-erd.md](model-erd.md)).
 
 ### Task 6.1 — Webhook Endpoint `M`
 
-- [ ] 6.1.1 `POST /webhook/zalo`, trả `200 OK` ngay lập tức, xử lý ngầm bằng `ctx.waitUntil()` (theo [disaster-recovery-fallback.md](disaster-recovery-fallback.md) §2.1).
+- [x] ~~6.1.1 `POST /webhook/zalo`~~ → thay bằng Task 7.1.2.
 
 ### Task 6.2 — Xác Thực Chữ Ký 🔴 `S`
 
-- [ ] 6.2.1 Verify header `X-ZEvent-Signature` bằng HMAC-SHA256 + `ZALO_APP_SECRET`, constant-time compare (xem [sdd.md](sdd.md) §4.1).
-
-- [ ] 6.2.2 Từ chối (401) nếu chữ ký sai/thiếu — viết test giả lập request giả mạo.
+- [x] ~~6.2.1/6.2.2~~ → thay bằng Task 7.2.1.
 
 ### Task 6.3 — Xử Lý Sự Kiện `M`
 
-- [ ] 6.3.1 `user_send_text` → gửi sang Parser.
-
-- [ ] 6.3.2 `user_send_image` → tải URL ảnh, gửi sang Parser (OCR qua GPT-4o-mini).
-- [ ] 6.3.3 Postback Keep/Kill → gọi Epic 5 Task 5.5.
+- [x] ~~6.3.1/6.3.2/6.3.3~~ → thay bằng Task 7.3.
 
 ### Task 6.4 — Gửi Tin Nhắn Chủ Động (Send API) `S`
 
-- [ ] 6.4.1 Client gửi tin nhắn riêng tư (Soft Alert) kèm quick-reply buttons.
-
-- [ ] 6.4.2 Client gửi tin nhắn nhóm (Red Alert) kèm tag member.
+- [x] ~~6.4.1/6.4.2/6.4.3~~ → thay bằng Task 7.3.2 (Telegram hỗ trợ Group Chat thật + inline keyboard, không giới hạn cửa sổ 7 ngày).
 
 ### Task 6.5 — Test Payload `S`
 
-- [ ] 6.5.1 Test theo mock payload ở [test-cases-specification.md](test-cases-specification.md) §2.1.
+- [x] ~~6.5.1~~ → thay bằng Task 7.4.1.
 
-**✅ DoD Epic 6:** Gửi thử ảnh biên lai thật qua Zalo OA sandbox → ghi nhận đúng vào D1 + phản hồi đúng kịch bản.
+**❌ DoD Epic 6:** Không áp dụng — Epic bị thay thế trước khi lên production.
 
 ---
 
-## Epic 7 — Tích Hợp Telegram Bot 🟡
+## Epic 7 — Tích Hợp Telegram Bot 🔴
 
 ### Task 7.1 — Đăng Ký Webhook & Endpoint `S`
 
@@ -319,19 +315,19 @@
 
 ### Task 7.2 — Xác Thực Webhook 🔴 `S`
 
-- [ ] 7.2.1 Verify header `X-Telegram-Bot-Api-Secret-Token` khớp với `TELEGRAM_WEBHOOK_SECRET` (xem [sdd.md](sdd.md) §4.2).
+- [x] 7.2.1 Verify header `X-Telegram-Bot-Api-Secret-Token` khớp với `TELEGRAM_WEBHOOK_SECRET` (xem [sdd.md](sdd.md) §4.2).
 
 ### Task 7.3 — Xử Lý Message/Callback Query `M`
 
-- [ ] 7.3.1 Nhận `message.text`/`message.photo` → gửi Parser.
+- [x] 7.3.1 Nhận `message.text`/`message.photo` → gửi Parser (ảnh tải qua `getFile` + Base64 Data URL, không lộ bot token).
 
-- [ ] 7.3.2 Nhận `callback_query.data` (Keep/Kill) → gọi Epic 5 Task 5.5, phản hồi bằng `answerCallbackQuery`.
+- [x] 7.3.2 Nhận `callback_query.data` (Keep/Kill) → gọi Epic 5 Task 5.5, phản hồi bằng `answerCallbackQuery`, kèm inline keyboard buttons và Red Alert gửi vào Family Group Chat thật.
 
 ### Task 7.4 — Test Payload `S`
 
-- [ ] 7.4.1 Test theo mock payload ở [test-cases-specification.md](test-cases-specification.md) §2.2.
+- [x] 7.4.1 Test theo mock payload ở [test-cases-specification.md](test-cases-specification.md) §2.2.
 
-**✅ DoD Epic 7:** Luồng Telegram tương đương Zalo, test pass đầy đủ.
+**✅ DoD Epic 7:** Luồng Telegram thay thế Zalo hoàn toàn, test pass đầy đủ (`apps/backend/src/features/telegram/`). Còn lại: 7.1.1 đăng ký `setWebhook` thủ công khi có `TELEGRAM_BOT_TOKEN` thật.
 
 ---
 
@@ -405,7 +401,7 @@
 
 ---
 
-## Epic 11 — Frontend: React SPA (Zalo Mini App / Telegram Mini App) 🟡
+## Epic 11 — Frontend: React SPA (Telegram Mini App) 🟡
 
 ### Task 11.1 — Khởi Tạo Dự Án Frontend `S`
 
@@ -426,10 +422,6 @@
 
 - [ ] 11.3.2 Sửa nhanh amount / next_billing_date / is_must_keep.
 
-### Task 11.4 — Tích Hợp Zalo Mini App SDK `M`
-
-- [ ] 11.4.1 Lấy `User ID` tự động, không yêu cầu đăng nhập lại.
-
 ### Task 11.5 — Tích Hợp Telegram Mini App (Web App SDK) `M`
 
 - [ ] 11.5.1 Nhúng SPA làm Telegram Web App, lấy `user.id`/`initData` tự động qua `window.Telegram.WebApp`.
@@ -442,7 +434,7 @@
 
 - [ ] 11.7.1 Smoke test render Dashboard, test tương tác nút Keep/Kill.
 
-**✅ DoD Epic 11:** Thành viên gia đình mở Zalo Mini App / Telegram Mini App thấy đúng dữ liệu, thao tác được Keep/Kill/sửa thẻ.
+**✅ DoD Epic 11:** Thành viên gia đình mở Telegram Mini App thấy đúng dữ liệu, thao tác được Keep/Kill/sửa thẻ.
 
 ---
 
@@ -520,7 +512,7 @@
 
 ### Task 15.2 — Thêm Thành Viên Vào Bot `S`
 
-- [ ] 15.2.1 Thêm bạn bè Zalo OA / mời thành viên kích hoạt chat với Telegram Bot cho toàn bộ 10 thành viên.
+- [ ] 15.2.1 Mời thành viên kích hoạt chat với Telegram Bot cho toàn bộ 10 thành viên (và thêm bot vào Nhóm Gia Đình).
 
 - [ ] 15.2.2 Test gửi thử 1 ảnh biên lai + 1 SMS mẫu từ mỗi thành viên.
 
@@ -566,14 +558,14 @@
 
 ## 2. Gợi Ý Thứ Tự Triển Khai Thực Tế (Sprint Suggestion)
 
-| Sprint   | Nội dung                                                  |
-| -------- | --------------------------------------------------------- |
-| Sprint 1 | Epic 0 + Epic 1 + Epic 2                                  |
-| Sprint 2 | Epic 3 + Epic 4 (song song với Epic 13 testing)           |
-| Sprint 3 | Epic 5 + Epic 6 + Epic 8 (kênh input chính: Zalo + Email) |
-| Sprint 4 | Epic 7 + Epic 9 + Epic 10                                 |
-| Sprint 5 | Epic 11 (Frontend SPA) + Epic 12 (Security hardening)     |
-| Sprint 6 | Epic 14 (DR drill) + Epic 15 (Onboarding + Go-Live)       |
-| Liên tục | Epic 16                                                   |
+| Sprint   | Nội dung                                                      |
+| -------- | ------------------------------------------------------------- |
+| Sprint 1 | Epic 0 + Epic 1 + Epic 2                                      |
+| Sprint 2 | Epic 3 + Epic 4 (song song với Epic 13 testing)               |
+| Sprint 3 | Epic 5 + Epic 7 + Epic 8 (kênh input chính: Telegram + Email) |
+| Sprint 4 | Epic 9 + Epic 10                                              |
+| Sprint 5 | Epic 11 (Frontend SPA) + Epic 12 (Security hardening)         |
+| Sprint 6 | Epic 14 (DR drill) + Epic 15 (Onboarding + Go-Live)           |
+| Liên tục | Epic 16                                                       |
 
 > 💡 **Lưu ý triển khai:** Epic 12 (Bảo mật) không phải làm cuối cùng — chữ ký webhook (Task 6.2, 7.2) và auth admin (Task 10.1) phải hoàn thành **trước khi** mở endpoint ra internet thật, tức là ngay trong Sprint 3-4, không đợi tới Sprint 5.

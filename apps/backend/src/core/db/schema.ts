@@ -97,7 +97,7 @@ export const alerts = sqliteTable(
     alertTypeCheck: check('alert_type_check', sql`${table.alertType} IN ('SOFT_T3', 'RED_T24')`),
     alertStatusCheck: check(
       'alert_status_check',
-      sql`${table.status} IN ('SCHEDULED', 'SENT', 'CANCELLED')`
+      sql`${table.status} IN ('SCHEDULED', 'SENT', 'CANCELLED', 'FAILED')`
     ),
     alertResponseCheck: check(
       'alert_response_check',

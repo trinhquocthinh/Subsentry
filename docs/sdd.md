@@ -2,12 +2,12 @@
 
 **Tài Liệu Đặc Tả Trạng Thái & Thiết Kế API Webhook** | _Spec-Driven Engineering for Reliable Family Automation_
 
-| Document Metadata          | Details                                        |
-| -------------------------- | ---------------------------------------------- |
-| **Document Version**       | 1.0                                            |
-| **Target Architecture**    | Cloudflare Workers & Cloudflare D1             |
-| **Integration Interfaces** | Zalo OA Webhooks, Telegram Bot API, OpenAI API |
-| **Status**                 | Approved                                       |
+| Document Metadata          | Details                            |
+| -------------------------- | ---------------------------------- |
+| **Document Version**       | 1.0                                |
+| **Target Architecture**    | Cloudflare Workers & Cloudflare D1 |
+| **Integration Interfaces** | Telegram Bot API, OpenAI API       |
+| **Status**                 | Approved                           |
 
 ---
 
@@ -64,64 +64,11 @@ Mỗi dịch vụ đăng ký (Subscription/Trial) lưu trữ trong Cloudflare D1
 
 ## 2. API & Webhook Payloads Specification (Đặc Tả Payload API)
 
-### 2.1 Zalo OA Webhook Payload (Cổng Nhận Tin Nhắn & Ảnh)
-
-Khi thành viên gửi tin nhắn SMS copy hoặc ảnh chụp màn hình biên lai tới Zalo OA, Cloudflare Workers sẽ nhận được webhook POST từ Zalo Server:
-
-#### 💬 2.1.1 Payload tin nhắn văn bản (SMS copy):
-
-```json
-{
-  "event_name": "user_send_text",
-  "app_id": "45681273948127491",
-  "sender": {
-    "id": "zalo_user_id_102938"
-  },
-  "recipient": {
-    "id": "zalo_oa_id_987654"
-  },
-  "message": {
-    "text": "TK 12345678 bien dong -250,000VND vao 02/08/2026. ND: GD tu CANVA.COM",
-    "msg_id": "msg_abc123xyz"
-  },
-  "timestamp": 1785635043000
-}
-```
-
-#### 📸 2.1.2 Payload ảnh chụp màn hình biên lai (OCR):
-
-```json
-{
-  "event_name": "user_send_image",
-  "app_id": "45681273948127491",
-  "sender": {
-    "id": "zalo_user_id_102938"
-  },
-  "recipient": {
-    "id": "zalo_oa_id_987654"
-  },
-  "message": {
-    "attachments": [
-      {
-        "payload": {
-          "url": "https://openapi.zalo.me/v2.0/oa/download/attachment?id=img_998877"
-        },
-        "type": "image"
-      }
-    ],
-    "msg_id": "msg_img112233"
-  },
-  "timestamp": 1785635045000
-}
-```
-
----
-
-### 2.2 Telegram Bot API Webhook Payload
+### 2.1 Telegram Bot API Webhook Payload
 
 Hệ thống đăng ký Webhook với Telegram Bot API (gọi một lần API `setWebhook` kèm `secret_token`) để tiếp nhận tin nhắn từ thành viên qua Telegram. Telegram gửi mọi sự kiện dưới dạng đối tượng `Update` duy nhất tới endpoint đã đăng ký:
 
-#### 💬 2.2.1 Payload tin nhắn văn bản từ Telegram (SMS copy):
+#### 💬 2.1.1 Payload tin nhắn văn bản từ Telegram (SMS copy):
 
 ```json
 {
@@ -143,7 +90,7 @@ Hệ thống đăng ký Webhook với Telegram Bot API (gọi một lần API `s
 }
 ```
 
-#### 📸 2.2.2 Payload ảnh chụp màn hình biên lai (photo):
+#### 📸 2.1.2 Payload ảnh chụp màn hình biên lai (photo):
 
 ```json
 {
@@ -171,7 +118,7 @@ Hệ thống đăng ký Webhook với Telegram Bot API (gọi một lần API `s
 }
 ```
 
-#### 🔘 2.2.3 Payload bấm nút Inline Keyboard (Keep/Kill):
+#### 🔘 2.1.3 Payload bấm nút Inline Keyboard (Keep/Kill):
 
 ```json
 {
@@ -197,7 +144,7 @@ Hệ thống đăng ký Webhook với Telegram Bot API (gọi một lần API `s
 
 ---
 
-### 2.3 Cloudflare Email Routing Payload
+### 2.2 Cloudflare Email Routing Payload
 
 Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ được Cloudflare chuyển thành cấu hình webhook HTTP POST gửi trực tiếp tới Cloudflare Worker:
 
@@ -268,7 +215,7 @@ Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ 
 
 1. **Confidence Score >= 0.85:**
    - Thao tác: Cloudflare Worker tự động ghi nhận trực tiếp vào bảng `subscriptions` trong Cloudflare D1 Database [9].
-   - Phản hồi: Gửi tin nhắn xác nhận cho thành viên qua Zalo/Telegram: _"Hệ thống đã tự động ghi nhận dịch vụ **Netflix** (260.000 VND), hạn gia hạn kế tiếp là **02/09/2026**. Trạng thái: **Active**."_
+   - Phản hồi: Gửi tin nhắn xác nhận cho thành viên qua Telegram: _"Hệ thống đã tự động ghi nhận dịch vụ **Netflix** (260.000 VND), hạn gia hạn kế tiếp là **02/09/2026**. Trạng thái: **Active**."_
 2. **Confidence Score < 0.85:**
    - Thao tác: **Không** lưu trữ tự động vào cơ sở dữ liệu.
    - Phản hồi: Gửi tin nhắn kèm cấu trúc dữ liệu thô yêu cầu thành viên xác nhận thủ công bằng cách bấm nút: _"Hệ thống bóc tách không chắc chắn về biên lai này. Có phải bạn vừa đăng ký **Canva** với giá **250.000 VND** không? [Xác nhận đúng] | [Nhập lại thủ công]"_ [11].
@@ -277,22 +224,17 @@ Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ 
 
 ## 4. Xác Thực Webhook Đầu Vào (Inbound Webhook Signature Verification)
 
-Để ngăn chặn giả mạo payload (spoofing) gửi trực tiếp tới endpoint Worker mà không thông qua Zalo/Telegram/Cloudflare Email Routing thật, mọi webhook endpoint bắt buộc phải xác thực nguồn gốc trước khi xử lý dữ liệu.
+Để ngăn chặn giả mạo payload (spoofing) gửi trực tiếp tới endpoint Worker mà không thông qua Telegram/Cloudflare Email Routing thật, mọi webhook endpoint bắt buộc phải xác thực nguồn gốc trước khi xử lý dữ liệu.
 
-### 4.1 Zalo OA Webhook
-
-- Zalo gửi kèm header `X-ZEvent-Signature` (HMAC-SHA256 tính từ `app_secret` và raw request body).
-- Worker phải tính lại HMAC từ `ZALO_APP_SECRET` (lưu trong Cloudflare Secrets) và so sánh bằng constant-time comparison với header nhận được. Từ chối request (`401 Unauthorized`) nếu chữ ký không khớp.
-
-### 4.2 Telegram Bot Webhook
+### 4.1 Telegram Bot Webhook
 
 - Khi đăng ký webhook qua `setWebhook`, Worker truyền kèm tham số `secret_token` (giá trị chính là `TELEGRAM_WEBHOOK_SECRET`).
 - Từ thời điểm đó, mọi request Telegram gửi tới endpoint sẽ kèm header `X-Telegram-Bot-Api-Secret-Token`. Worker so sánh (constant-time) giá trị header với `TELEGRAM_WEBHOOK_SECRET` đang lưu trong Cloudflare Secrets; từ chối (`401 Unauthorized`) nếu không khớp hoặc thiếu header.
 
-### 4.3 Cloudflare Email Routing
+### 4.2 Cloudflare Email Routing
 
 - Email Worker chạy trong cùng tài khoản Cloudflare nên không cần xác thực chữ ký bổ sung, nhưng route rule phải giới hạn chỉ nhận email gửi đúng tới địa chỉ `subs@yourfamily.com` để tránh bị lạm dụng làm relay trung gian.
 
-### 4.4 Bảo Vệ Endpoint Quản Trị (Admin Endpoint)
+### 4.3 Bảo Vệ Endpoint Quản Trị (Admin Endpoint)
 
 - Endpoint `POST /api/admin/reconcile-sync` (xem `disaster-recovery-fallback.md`) bắt buộc yêu cầu header `Authorization: Bearer <ADMIN_API_TOKEN>` với token lưu trong Cloudflare Secrets (`ADMIN_API_TOKEN`), không dùng chung với bất kỳ token nào khác. Request thiếu hoặc sai token phải bị từ chối ngay với `401 Unauthorized`.
