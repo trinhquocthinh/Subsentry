@@ -331,25 +331,30 @@
 
 ---
 
-## Epic 8 — Tích Hợp Cloudflare Email Routing 🔴
+## Epic 8 — Tích Hợp Email Routing & Google Apps Script (Email Ingestion) 🔴
 
-### Task 8.1 — Cấu Hình Route Rule `S`
+### Task 8.1 — Tích Hợp Google Apps Script (0đ / Không Tên Miền Riêng) `S`
 
-- [ ] 8.1.1 Cấu hình Cloudflare Email Routing trỏ `subs@yourfamily.com` → Worker.
+- [x] 8.1.1 Xây dựng HTTP Webhook Endpoint `POST /webhook/email` tiếp nhận payload JSON từ Google Apps Script.
+- [x] 8.1.2 Bảo mật Fail-Closed & Timing-Safe Check: Yêu cầu bí mật `GMAIL_WEBHOOK_SECRET` qua header `X-Gmail-Webhook-Secret`. Từ chối 500 nếu server thiếu secret, từ chối 401 nếu token không khớp.
+- [x] 8.1.3 Tạo script `apps/backend/scripts/gmail-apps-script.js` hỗ trợ tự động quét email hóa đơn Gmail ngầm 10 phút/lần, thu hẹp query theo domain nhà cung cấp và đánh dấu nhãn `Subsentry_Processed` tức thì per-thread.
 
-- [ ] 8.1.2 Giới hạn route chỉ nhận đúng địa chỉ đích, chống lạm dụng làm relay (xem [sdd.md](sdd.md) §4.3).
+### Task 8.2 — Cấu Hình Cloudflare Email Routing (Phương Án Dự Phòng Cho Custom Domain) `S`
 
-### Task 8.2 — Xử Lý Payload Email `M`
+- [x] 8.2.1 Triển khai exported `email()` handler native trong Cloudflare Worker (`PostalMimeEmailAdapter`).
+- [x] 8.2.2 Giới hạn route chỉ nhận đúng địa chỉ đích, chống lạm dụng làm relay (xem [sdd.md](sdd.md) §4.3).
 
-- [ ] 8.2.1 Parse `from/to/subject/text/html`.
+### Task 8.3 — Xử Lý Payload & Tự Động Tạo Thành Viên `M`
 
-- [ ] 8.2.2 Gửi nội dung sang Parser (Epic 3).
+- [x] 8.3.1 Trích xuất `from/to/subject/text/html`, tự động cắt bớt độ dài (max 3000 ký tự) chống tốn token AI.
+- [x] 8.3.2 Tự động tìm kiếm hoặc tạo mới thành viên (`members`) dựa trên email người gửi, phòng chống lỗi `subscriberId = null` gây vỡ ràng buộc cơ sở dữ liệu.
+- [x] 8.3.3 Gửi nội dung sang AI Parser (Epic 3), phát thông báo xác nhận qua Telegram nếu thành viên đã liên kết Telegram.
 
-### Task 8.3 — Test `S`
+### Task 8.4 — Test Suite & Quality Gates `S`
 
-- [ ] 8.3.1 Test theo mock payload ở [test-cases-specification.md](test-cases-specification.md) §2.3.
+- [x] 8.4.1 Bao phủ test case TC-8.1 đến TC-8.8 (100% test pass).
 
-**✅ DoD Epic 8:** Email forward thật từ Gmail cá nhân → ghi nhận đúng subscription trong D1.
+**✅ DoD Epic 8:** Tiếp nhận email hóa đơn thành công từ cả 2 kênh (Google Apps Script HTTP POST & Cloudflare Email Routing), tự động gán/tạo thành viên và lưu trữ vào D1 Database an toàn.
 
 ---
 

@@ -144,17 +144,24 @@ Hệ thống đăng ký Webhook với Telegram Bot API (gọi một lần API `s
 
 ---
 
-### 2.2 Cloudflare Email Routing Payload
+### 2.2 Email Ingestion Payload (Google Apps Script & Email Routing)
 
-Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ được Cloudflare chuyển thành cấu hình webhook HTTP POST gửi trực tiếp tới Cloudflare Worker:
+Hệ thống tiếp nhận hóa đơn email qua 2 kênh:
+
+1. **Google Apps Script HTTP Webhook (`POST /webhook/email`)** — Dành cho gia đình dùng `@gmail.com` không có domain riêng (Phương án chính, 0đ).
+2. **Cloudflare Email Routing (`email()` handler native)** — Dành cho môi trường có tên miền riêng (Phương án dự phòng).
+
+#### 📬 Payload HTTP POST từ Google Apps Script (`POST /webhook/email`):
 
 ```json
 {
+  "secret": "GMAIL_WEBHOOK_SECRET_TOKEN",
   "from": "member-email@gmail.com",
-  "to": "subs@yourfamily.com",
+  "to": "family-member@gmail.com",
   "subject": "Fwd: Your Apple Receipt - Subscription Confirmation",
-  "text": "---------- Forwarded message ---------\nFrom: Apple <no_reply@apple.com>\nDate: Sun, Aug 2, 2026\nSubject: Receipt for iCloud+ with 2TB storage. Price: 199.000 VND/month. Next billing date: 02/09/2026",
-  "html": "<p>Receipt details here...</p>"
+  "text": "Receipt for iCloud+ with 2TB storage. Price: 199.000 VND/month. Next billing date: 02/09/2026",
+  "html": "<p>Receipt details here...</p>",
+  "date": "2026-08-09T07:50:00.000Z"
 }
 ```
 
@@ -231,10 +238,17 @@ Email tự động chuyển tiếp từ Gmail cá nhân của thành viên sẽ 
 - Khi đăng ký webhook qua `setWebhook`, Worker truyền kèm tham số `secret_token` (giá trị chính là `TELEGRAM_WEBHOOK_SECRET`).
 - Từ thời điểm đó, mọi request Telegram gửi tới endpoint sẽ kèm header `X-Telegram-Bot-Api-Secret-Token`. Worker so sánh (constant-time) giá trị header với `TELEGRAM_WEBHOOK_SECRET` đang lưu trong Cloudflare Secrets; từ chối (`401 Unauthorized`) nếu không khớp hoặc thiếu header.
 
-### 4.2 Cloudflare Email Routing
+### 4.2 Google Apps Script HTTP Webhook (`POST /webhook/email`)
 
-- Email Worker chạy trong cùng tài khoản Cloudflare nên không cần xác thực chữ ký bổ sung, nhưng route rule phải giới hạn chỉ nhận email gửi đúng tới địa chỉ `subs@yourfamily.com` để tránh bị lạm dụng làm relay trung gian.
+- Yêu cầu xác thực **Fail-Closed**: Bắt buộc cấu hình secret `GMAIL_WEBHOOK_SECRET` trên Cloudflare Worker.
+- Mọi request gửi tới endpoint `POST /webhook/email` phải kèm header `X-Gmail-Webhook-Secret` (hoặc thuộc tính `secret` trong JSON body).
+- Worker thực hiện so sánh hằng thời gian (constant-time timing-safe comparison).
+- Trả về `500 Server Misconfigured` nếu server chưa được cấu hình secret (Fail-Closed) và `401 Unauthorized` nếu token sai.
 
-### 4.3 Bảo Vệ Endpoint Quản Trị (Admin Endpoint)
+### 4.3 Cloudflare Email Routing (Custom Domain Backup)
+
+- Email Worker chạy trong cùng tài khoản Cloudflare nên không cần xác thực chữ ký bổ sung, nhưng route rule phải giới hạn chỉ nhận email gửi đúng tới địa chỉ đích (`allowedToAddress`) để tránh bị lạm dụng làm relay trung gian.
+
+### 4.4 Bảo Vệ Endpoint Quản Trị (Admin Endpoint)
 
 - Endpoint `POST /api/admin/reconcile-sync` (xem `disaster-recovery-fallback.md`) bắt buộc yêu cầu header `Authorization: Bearer <ADMIN_API_TOKEN>` với token lưu trong Cloudflare Secrets (`ADMIN_API_TOKEN`), không dùng chung với bất kỳ token nào khác. Request thiếu hoặc sai token phải bị từ chối ngay với `401 Unauthorized`.

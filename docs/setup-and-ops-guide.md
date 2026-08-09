@@ -298,3 +298,54 @@ curl "https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getWebhookInfo"
 ```
 
 Cuối cùng, thêm bot vào **Nhóm Chat Gia Đình** trên Telegram và lấy `chat_id` của nhóm (ví dụ qua `getUpdates` hoặc bot `@userinfobot`) để cấu hình secret `TELEGRAM_FAMILY_GROUP_CHAT_ID` — giá trị này được `TelegramNotificationAdapter.sendRedAlert()` dùng để gửi Red Alert trực tiếp vào nhóm kèm tag Subscriber + Card Owner.
+
+---
+
+#### 8. Cấu Hình Cloudflare Email Routing (Tích Hợp Forward Email)
+
+Để hệ thống nhận email chuyển tiếp tự động từ Gmail cá nhân của các thành viên gia đình:
+
+1. **Kích hoạt Cloudflare Email Routing**:
+   - Vào Cloudflare Dashboard → chọn Domain gia đình (ví dụ: `yourfamily.com`).
+   - Vào mục **Email** → **Email Routing**.
+   - Bật tính năng Email Routing và làm theo hướng dẫn thiết lập bản ghi DNS (MX & TXT) tự động.
+
+2. **Thêm Custom Address Rule**:
+   - Chọn tab **Routing rules** → bấm **Create rule**.
+   - **Custom address**: Điền `subs` (tạo địa chỉ email `subs@yourfamily.com`).
+   - **Action**: Chọn **Send to a Worker**.
+   - **Destination Worker**: Chọn `subsentry-backend`.
+   - Bấm **Save**.
+
+3. **Cấu hình Secret `ALLOWED_EMAIL_TO` (Tùy chọn)**:
+   - Nếu sử dụng địa chỉ email đích khác mặc định (`subs@yourfamily.com`), thiết lập biến bí mật cho Worker:
+     ```bash
+     wrangler secret put ALLOWED_EMAIL_TO
+     # Nhập địa chỉ: subs@domain_cua_ban.com
+     ```
+
+---
+
+#### 9. Tích Hợp Google Apps Script (Cho Gia Đình Không Có Tên Miền Riêng — 0đ)
+
+Nếu gia đình **chỉ sử dụng `@gmail.com`** và không sở hữu tên miền riêng:
+
+1. **Thiết lập secret trên Worker**:
+
+   ```bash
+   wrangler secret put GMAIL_WEBHOOK_SECRET
+   # Nhập một chuỗi ngẫu nhiên bí mật (ví dụ: my-family-secret-key-123)
+   ```
+
+2. **Cài đặt Google Apps Script trên Gmail cá nhân**:
+   - Mở [https://script.google.com/](https://script.google.com/) ➡️ Bấm **Dự án mới** (New project).
+   - Copy nội dung file script từ dự án: [`apps/backend/scripts/gmail-apps-script.js`](../apps/backend/scripts/gmail-apps-script.js) và dán vào trình biên dịch.
+   - Chỉnh sửa 2 dòng cấu hình:
+     ```javascript
+     const WORKER_URL = 'https://subsentry-backend.<subdomain>.workers.dev/webhook/email';
+     const SECRET_TOKEN = 'my-family-secret-key-123';
+     ```
+   - Bấm **Lưu** (💾).
+   - Chọn hàm `setupTrigger` ở menu thả xuống ➡️ Bấm **Chạy** (Run) ➡️ Chấp nhận cấp quyền cho Gmail khi Google hỏi.
+
+3. **Hoàn tất**: Script sẽ chạy ngầm định kỳ 10 phút/lần, tự động quét các email chứa từ khóa hóa đơn/dùng thử và đẩy về Worker HTTP endpoint `POST /webhook/email`.

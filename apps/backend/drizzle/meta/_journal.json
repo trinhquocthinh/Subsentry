@@ -15,6 +15,13 @@
       "when": 1785751799692,
       "tag": "0001_cynical_angel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786200196336,
+      "tag": "0002_loving_sleepwalker",
+      "breakpoints": true
     }
   ]
 }

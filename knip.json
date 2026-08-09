@@ -1,7 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignoreDependencies": ["husky"],
-  "ignore": ["apps/backend/src/core/types/**", "apps/backend/src/features/**"],
+  "ignore": [
+    "apps/backend/src/core/types/**",
+    "apps/backend/src/features/**",
+    "apps/backend/scripts/**"
+  ],
   "rules": {
     "exports": "off",
     "types": "off",

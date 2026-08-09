@@ -8,6 +8,7 @@ export const members = sqliteTable(
     id: integer('id').primaryKey({ autoIncrement: true }),
     zaloUserId: text('zalo_user_id').unique(),
     telegramChatId: text('telegram_chat_id').unique(),
+    email: text('email').unique(),
     displayName: text('display_name').notNull(),
     role: text('role', { enum: ['ADMIN', 'SUBSCRIBER', 'CARD_OWNER'] }).notNull(),
     createdAt: text('created_at')

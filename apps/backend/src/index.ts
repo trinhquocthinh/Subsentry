@@ -17,6 +17,9 @@ import {
   TelegramClientAdapter,
   TelegramNotificationAdapter,
 } from './features/telegram/adapters/telegram-client.adapter';
+import { handleEmailEvent } from './features/email/email.handler';
+import { emailRouter } from './features/email/email.router';
+import type { CloudflareForwardableEmailMessage } from './features/email/domain/email-message.interface';
 
 export type Bindings = {
   DB: D1Database;
@@ -24,6 +27,8 @@ export type Bindings = {
   TELEGRAM_WEBHOOK_SECRET?: string;
   TELEGRAM_FAMILY_GROUP_CHAT_ID?: string;
   OPENAI_API_KEY?: string;
+  ALLOWED_EMAIL_TO?: string;
+  GMAIL_WEBHOOK_SECRET?: string;
   [key: string]: unknown;
 };
 
@@ -34,6 +39,7 @@ app.use('*', requestLogger);
 
 // Mount feature routers
 app.route('/webhook/telegram', telegramRouter);
+app.route('/webhook/email', emailRouter);
 
 // Global Error & 404 Handler
 app.onError(globalErrorHandler);
@@ -96,5 +102,17 @@ export default {
     );
 
     ctx.waitUntil(Promise.all([retryUseCase.execute(), alertUseCase.execute()]));
+  },
+  email: async (
+    message: CloudflareForwardableEmailMessage,
+    env: Bindings,
+    ctx: ExecutionContext
+  ) => {
+    const promise = handleEmailEvent(message, env);
+    if (ctx && typeof ctx.waitUntil === 'function') {
+      ctx.waitUntil(promise);
+    } else {
+      await promise;
+    }
   },
 };
