@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { createDbClient } from '@/core/db';
+import { timingSafeEqualStr } from '@/core/utils/security';
 import { OpenAIParserAdapter } from '@/features/parser/adapters/openai-parser.adapter';
 import { ParseReceiptUseCase } from '@/features/parser/use-cases/parse-receipt.use-case';
 import {
@@ -36,15 +37,6 @@ export type EmailRouterEnv = {
 };
 
 const emailRouter = new Hono<EmailRouterEnv>();
-
-function timingSafeEqualStr(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
-}
 
 emailRouter.post('/', async (c) => {
   const secretHeader = c.req.header('X-Gmail-Webhook-Secret');

@@ -23,6 +23,7 @@ import {
 import { handleEmailEvent } from './features/email/email.handler';
 import { emailRouter } from './features/email/email.router';
 import type { CloudflareForwardableEmailMessage } from './features/email/domain/email-message.interface';
+import { adminRouter } from './features/admin/admin.router';
 
 export type Bindings = {
   DB: D1Database;
@@ -32,6 +33,7 @@ export type Bindings = {
   OPENAI_API_KEY?: string;
   ALLOWED_EMAIL_TO?: string;
   GMAIL_WEBHOOK_SECRET?: string;
+  ADMIN_API_TOKEN?: string;
   GOOGLE_SHEET_ID?: string;
   GOOGLE_SERVICE_ACCOUNT_EMAIL?: string;
   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?: string;
@@ -46,6 +48,7 @@ app.use('*', requestLogger);
 // Mount feature routers
 app.route('/webhook/telegram', telegramRouter);
 app.route('/webhook/email', emailRouter);
+app.route('/api/admin', adminRouter);
 
 // Global Error & 404 Handler
 app.onError(globalErrorHandler);

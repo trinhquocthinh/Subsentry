@@ -388,19 +388,19 @@
 
 ### Task 10.1 — Endpoint Reconcile-Sync `M`
 
-- [ ] 10.1.1 `POST /api/admin/reconcile-sync`, bắt buộc header `Authorization: Bearer <ADMIN_API_TOKEN>` (xem [disaster-recovery-fallback.md](disaster-recovery-fallback.md) §3.1, [sdd.md](sdd.md) §4.4).
+- [x] 10.1.1 `POST /api/admin/reconcile-sync`, bắt buộc header `Authorization: Bearer <ADMIN_API_TOKEN>` (xem [disaster-recovery-fallback.md](disaster-recovery-fallback.md) §3.1, [sdd.md](sdd.md) §4.4).
 
-- [ ] 10.1.2 Từ chối 401 nếu thiếu/sai token, viết test cụ thể.
+- [x] 10.1.2 Từ chối 401 nếu thiếu/sai token, viết test cụ thể.
 
 ### Task 10.2 — Logic Hòa Giải `M`
 
-- [ ] 10.2.1 Tải dữ liệu Sheets (nguồn chân lý) + D1, so khớp và ghi đè bản ghi sai lệch.
+- [x] 10.2.1 Tải dữ liệu Sheets (nguồn chân lý) + D1, so khớp và ghi đè bản ghi sai lệch.
 
-- [ ] 10.2.2 Gửi thông báo xác nhận hoàn tất vào nhóm chat gia đình.
+- [x] 10.2.2 Gửi thông báo xác nhận hoàn tất vào nhóm chat gia đình.
 
 ### Task 10.3 — Audit Log 🟢 `S`
 
-- [ ] 10.3.1 Ghi log ai/khi nào gọi endpoint admin (phục vụ truy vết).
+- [x] 10.3.1 Ghi log ai/khi nào gọi endpoint admin (phục vụ truy vết).
 
 **✅ DoD Epic 10:** Endpoint chạy đúng, có auth, có log, không thể gọi được nếu thiếu token.
 

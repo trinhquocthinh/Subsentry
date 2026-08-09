@@ -158,7 +158,12 @@ export class GoogleSheetsClientAdapter implements IGoogleSheetsClient {
     };
   }
 
-  private async mutateRow(url: string, method: string, row: SheetRow, actionDesc: string): Promise<void> {
+  private async mutateRow(
+    url: string,
+    method: string,
+    row: SheetRow,
+    actionDesc: string
+  ): Promise<void> {
     const accessToken = await this.getAccessToken();
     const response = await fetch(url, {
       method,
