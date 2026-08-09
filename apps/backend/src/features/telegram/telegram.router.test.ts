@@ -112,6 +112,36 @@ describe('Epic 7 — Telegram Bot Integration Tests', () => {
       const body = (await res.json()) as { success: boolean };
       expect(body.success).toBe(true);
     });
+
+    it('gom onAsyncWork vào ctx.waitUntil khi xử lý message', async () => {
+      const waitUntilMock = vi.fn();
+      const mockCtx = {
+        waitUntil: waitUntilMock,
+        passThroughOnException: vi.fn(),
+        props: {},
+      } as unknown as ExecutionContext;
+
+      const res = await worker.fetch(
+        new Request('http://localhost/webhook/telegram', {
+          method: 'POST',
+          headers: { 'X-Telegram-Bot-Api-Secret-Token': TELEGRAM_SECRET },
+          body: JSON.stringify({
+            update_id: 12345,
+            message: {
+              chat: { id: 112233, type: 'private' },
+              text: 'A random message that triggers background work',
+            },
+          }),
+        }),
+        { DB: mockD1, TELEGRAM_WEBHOOK_SECRET: TELEGRAM_SECRET },
+        mockCtx
+      );
+
+      expect(res.status).toBe(200);
+      // Wait until the background work promise resolves since it's not awaited
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(waitUntilMock).toHaveBeenCalled();
+    });
   });
 
   describe('Task 7.3 — Xử lý Message/Callback Query', () => {

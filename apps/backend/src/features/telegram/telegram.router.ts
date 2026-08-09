@@ -8,6 +8,10 @@ import { TransitionSubscriptionStateUseCase } from '@/features/subscription/use-
 import { DrizzleSubscriptionRepository } from '@/features/subscription/adapters/drizzle-subscription.repository';
 import { SubscriptionAction } from '@/features/subscription/domain/subscription.entity';
 import { TelegramClientAdapter, type ITelegramClient } from './adapters/telegram-client.adapter';
+import { GoogleSheetsClientAdapter } from '@/features/sheets/adapters/google-sheets-client.adapter';
+import type { IGoogleSheetsClient } from '@/features/sheets/domain/google-sheets-client.interface';
+import { SyncD1ToSheetsUseCase } from '@/features/sheets/use-cases/sync-d1-to-sheets.use-case';
+import { DrizzleMemberRepository } from '@/features/subscription/adapters/drizzle-member.repository';
 import { telegramSignatureMiddleware } from './middleware/telegram-signature';
 import type { TelegramUpdate } from './domain/telegram-payload.interface';
 
@@ -17,6 +21,9 @@ export type TelegramRouterEnv = {
     OPENAI_API_KEY?: string;
     TELEGRAM_BOT_TOKEN?: string;
     TELEGRAM_WEBHOOK_SECRET?: string;
+    GOOGLE_SHEET_ID?: string;
+    GOOGLE_SERVICE_ACCOUNT_EMAIL?: string;
+    GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?: string;
     [key: string]: unknown;
   };
   Variables: {
@@ -25,6 +32,8 @@ export type TelegramRouterEnv = {
     telegramClientOverride?: ITelegramClient;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parserServiceOverride?: any;
+    sheetsClientOverride?: IGoogleSheetsClient;
+    syncD1ToSheetsUseCaseOverride?: SyncD1ToSheetsUseCase;
   };
 };
 
@@ -40,10 +49,16 @@ export async function processTelegramUpdate(
   options: {
     openAiApiKey?: string;
     telegramBotToken?: string;
+    googleSheetId?: string;
+    googleServiceAccountEmail?: string;
+    googleServiceAccountPrivateKey?: string;
     telegramClientOverride?: ITelegramClient;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parserServiceOverride?: any;
-  }
+    sheetsClientOverride?: IGoogleSheetsClient;
+    syncD1ToSheetsUseCaseOverride?: SyncD1ToSheetsUseCase;
+  },
+  onAsyncWork?: (promise: Promise<void>) => void
 ): Promise<void> {
   const telegramClient =
     options.telegramClientOverride || new TelegramClientAdapter(options.telegramBotToken);
@@ -53,9 +68,31 @@ export async function processTelegramUpdate(
       options.openAiApiKey || (process.env.OPENAI_API_KEY as string) || 'mock-api-key'
     );
 
-  const parseReceiptUseCase = new ParseReceiptUseCase(parserService, db);
   const subscriptionRepo = new DrizzleSubscriptionRepository(db);
-  const transitionUseCase = new TransitionSubscriptionStateUseCase(subscriptionRepo);
+  const memberRepo = new DrizzleMemberRepository(db);
+
+  let syncD1ToSheetsUseCase = options.syncD1ToSheetsUseCaseOverride;
+  if (
+    !syncD1ToSheetsUseCase &&
+    options.googleSheetId &&
+    options.googleServiceAccountEmail &&
+    options.googleServiceAccountPrivateKey
+  ) {
+    const sheetsClient =
+      options.sheetsClientOverride ||
+      new GoogleSheetsClientAdapter(
+        options.googleServiceAccountEmail,
+        options.googleServiceAccountPrivateKey,
+        options.googleSheetId
+      );
+    syncD1ToSheetsUseCase = new SyncD1ToSheetsUseCase(sheetsClient, memberRepo);
+  }
+
+  const parseReceiptUseCase = new ParseReceiptUseCase(parserService, db, syncD1ToSheetsUseCase);
+  const transitionUseCase = new TransitionSubscriptionStateUseCase(
+    subscriptionRepo,
+    syncD1ToSheetsUseCase
+  );
 
   // 1. Xử lý Callback Query (nút bấm Keep/Kill của Inline Keyboard)
   if (update.callback_query) {
@@ -76,7 +113,11 @@ export async function processTelegramUpdate(
     const action = actionStr === 'KEEP' ? SubscriptionAction.KEEP : SubscriptionAction.KILL;
 
     try {
-      const updatedSub = await transitionUseCase.execute({ subscriptionId: subId, action });
+      const updatedSub = await transitionUseCase.execute({
+        subscriptionId: subId,
+        action,
+        onAsyncWork,
+      });
 
       if (alertId) {
         await db.update(alerts).set({ response: actionStr }).where(eq(alerts.id, alertId));
@@ -147,6 +188,7 @@ export async function processTelegramUpdate(
       content: message.text.trim(),
       contentType: 'TEXT',
       subscriberId,
+      onAsyncWork,
     });
 
     if (parseResult.message) {
@@ -172,6 +214,7 @@ export async function processTelegramUpdate(
       content: imageDataUrl,
       contentType: 'IMAGE_URL',
       subscriberId,
+      onAsyncWork,
     });
 
     if (parseResult.message) {
@@ -219,12 +262,20 @@ telegramRouter.post('/', async (c) => {
   const options = {
     openAiApiKey: c.env.OPENAI_API_KEY as string | undefined,
     telegramBotToken: c.env.TELEGRAM_BOT_TOKEN as string | undefined,
+    googleSheetId: c.env.GOOGLE_SHEET_ID as string | undefined,
+    googleServiceAccountEmail: c.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string | undefined,
+    googleServiceAccountPrivateKey: c.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY as string | undefined,
     telegramClientOverride: c.var.telegramClientOverride,
     parserServiceOverride: c.var.parserServiceOverride,
+    sheetsClientOverride: c.var.sheetsClientOverride,
+    syncD1ToSheetsUseCaseOverride: c.var.syncD1ToSheetsUseCaseOverride,
   };
 
+  const asyncPromises: Promise<void>[] = [];
+  const onAsyncWork = (p: Promise<void>) => asyncPromises.push(p);
+
   // Task 7.1: Phản hồi 200 OK ngay lập tức, xử lý background bằng ctx.waitUntil()
-  const backgroundWork = processTelegramUpdate(update, db, options).catch((err) => {
+  const backgroundWork = processTelegramUpdate(update, db, options, onAsyncWork).catch((err) => {
     // eslint-disable-next-line no-console
     console.error('[TelegramRouter] Error in background execution:', err);
   });
@@ -233,6 +284,9 @@ telegramRouter.post('/', async (c) => {
   try {
     if (c.executionCtx && typeof c.executionCtx.waitUntil === 'function') {
       c.executionCtx.waitUntil(backgroundWork);
+      for (const p of asyncPromises) {
+        c.executionCtx.waitUntil(p);
+      }
       hasWaitUntil = true;
     }
   } catch {
@@ -241,6 +295,7 @@ telegramRouter.post('/', async (c) => {
 
   if (!hasWaitUntil) {
     await backgroundWork;
+    await Promise.allSettled(asyncPromises);
   }
 
   return c.json({ success: true, timestamp: Date.now() });

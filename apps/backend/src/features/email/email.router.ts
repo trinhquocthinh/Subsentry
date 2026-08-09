@@ -9,6 +9,10 @@ import {
 import { PostalMimeEmailAdapter, type IEmailParserAdapter } from './adapters/email-parser.adapter';
 import { ProcessEmailUseCase } from './use-cases/process-email.use-case';
 import type { ParsedEmailPayload } from './domain/email-message.interface';
+import { GoogleSheetsClientAdapter } from '@/features/sheets/adapters/google-sheets-client.adapter';
+import type { IGoogleSheetsClient } from '@/features/sheets/domain/google-sheets-client.interface';
+import { SyncD1ToSheetsUseCase } from '@/features/sheets/use-cases/sync-d1-to-sheets.use-case';
+import { DrizzleMemberRepository } from '@/features/subscription/adapters/drizzle-member.repository';
 
 export type EmailRouterEnv = {
   Bindings: {
@@ -16,6 +20,9 @@ export type EmailRouterEnv = {
     OPENAI_API_KEY?: string;
     TELEGRAM_BOT_TOKEN?: string;
     GMAIL_WEBHOOK_SECRET?: string;
+    GOOGLE_SHEET_ID?: string;
+    GOOGLE_SERVICE_ACCOUNT_EMAIL?: string;
+    GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?: string;
     [key: string]: unknown;
   };
   Variables: {
@@ -23,6 +30,8 @@ export type EmailRouterEnv = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parserServiceOverride?: any;
     telegramClientOverride?: ITelegramClient;
+    sheetsClientOverride?: IGoogleSheetsClient;
+    syncD1ToSheetsUseCaseOverride?: SyncD1ToSheetsUseCase;
   };
 };
 
@@ -100,7 +109,25 @@ emailRouter.post('/', async (c) => {
       (c.env.OPENAI_API_KEY as string) || process.env.OPENAI_API_KEY || 'mock-api-key'
     );
 
-  const parseReceiptUseCase = new ParseReceiptUseCase(parserService, db);
+  let syncD1ToSheetsUseCase = c.var.syncD1ToSheetsUseCaseOverride;
+  if (
+    !syncD1ToSheetsUseCase &&
+    c.env.GOOGLE_SHEET_ID &&
+    c.env.GOOGLE_SERVICE_ACCOUNT_EMAIL &&
+    c.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+  ) {
+    const sheetsClient =
+      c.var.sheetsClientOverride ||
+      new GoogleSheetsClientAdapter(
+        c.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        c.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
+        c.env.GOOGLE_SHEET_ID
+      );
+    const memberRepo = new DrizzleMemberRepository(db);
+    syncD1ToSheetsUseCase = new SyncD1ToSheetsUseCase(sheetsClient, memberRepo);
+  }
+
+  const parseReceiptUseCase = new ParseReceiptUseCase(parserService, db, syncD1ToSheetsUseCase);
   const telegramClient =
     c.var.telegramClientOverride ||
     (c.env.TELEGRAM_BOT_TOKEN ? new TelegramClientAdapter(c.env.TELEGRAM_BOT_TOKEN) : undefined);
@@ -112,9 +139,21 @@ emailRouter.post('/', async (c) => {
     telegramClient
   );
 
+  const asyncPromises: Promise<void>[] = [];
+  const onAsyncWork = (p: Promise<void>) => asyncPromises.push(p);
+
   const result = await processEmailUseCase.execute({
     parsedPayload: body,
+    onAsyncWork,
   });
+
+  if (c.executionCtx && typeof c.executionCtx.waitUntil === 'function') {
+    for (const p of asyncPromises) {
+      c.executionCtx.waitUntil(p);
+    }
+  } else if (asyncPromises.length > 0) {
+    await Promise.allSettled(asyncPromises);
+  }
 
   return c.json({
     success: true,

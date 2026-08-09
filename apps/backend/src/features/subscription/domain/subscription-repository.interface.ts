@@ -13,6 +13,7 @@ export interface ISubscriptionRepository {
   findActiveSubscriptions(): Promise<SubscriptionEntity[]>;
   findByNextBillingDateRange(startDate: string, endDate: string): Promise<SubscriptionEntity[]>;
   findAllActiveGroupedByMerchant(): Promise<Map<string, SubscriptionEntity[]>>;
+  findAll(): Promise<SubscriptionEntity[]>;
   create(data: CreateSubscriptionInput): Promise<SubscriptionEntity>;
   update(id: number, data: UpdateSubscriptionInput): Promise<SubscriptionEntity>;
 }

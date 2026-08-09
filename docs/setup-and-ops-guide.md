@@ -186,7 +186,9 @@ Không bao giờ được lưu các khóa API, token bí mật trực tiếp tro
 - `TELEGRAM_BOT_TOKEN`: Token dùng để gọi Telegram Bot API gửi tin nhắn chủ động và nhận cập nhật.
 - `TELEGRAM_WEBHOOK_SECRET`: Chuỗi bí mật thiết lập khi gọi `setWebhook`, dùng để xác thực header `X-Telegram-Bot-Api-Secret-Token` của mọi webhook Telegram gửi tới.
 - `TELEGRAM_FAMILY_GROUP_CHAT_ID`: Chat ID của nhóm Telegram gia đình, dùng để gửi Red Alert trực tiếp vào nhóm kèm tag Subscriber + Card Owner.
-- `GOOGLE_SHEETS_API_KEY`: Khóa tích hợp Google API hoặc Token OAuth để đồng bộ Google Sheet.
+- `GOOGLE_SHEET_ID`: ID của file Google Sheets để đồng bộ.
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`: Email của Google Service Account có quyền edit file Sheets.
+- `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`: Private key của Service Account (định dạng RSA).
 - `ADMIN_API_TOKEN`: Token bảo vệ các endpoint quản trị nội bộ (ví dụ `/api/admin/reconcile-sync`).
 
 ##### 5.2 Cách cấu hình trên Cloudflare Edge thông qua Wrangler CLI
@@ -198,7 +200,9 @@ wrangler secret put OPENAI_API_KEY
 wrangler secret put TELEGRAM_BOT_TOKEN
 wrangler secret put TELEGRAM_WEBHOOK_SECRET
 wrangler secret put TELEGRAM_FAMILY_GROUP_CHAT_ID
-wrangler secret put GOOGLE_SHEETS_API_KEY
+wrangler secret put GOOGLE_SHEET_ID
+wrangler secret put GOOGLE_SERVICE_ACCOUNT_EMAIL
+wrangler secret put GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
 wrangler secret put ADMIN_API_TOKEN
 ```
 

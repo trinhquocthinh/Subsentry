@@ -15,6 +15,7 @@ export interface ProcessEmailInput {
   message?: CloudflareForwardableEmailMessage;
   parsedPayload?: ParsedEmailPayload;
   allowedToAddress?: string;
+  onAsyncWork?: (promise: Promise<void>) => void;
 }
 
 export interface ProcessEmailResult {
@@ -141,6 +142,7 @@ export class ProcessEmailUseCase {
         content: fullContent,
         contentType: 'TEXT',
         subscriberId,
+        onAsyncWork: input.onAsyncWork,
       });
 
       // Notification strategy: Send Telegram message if member linked

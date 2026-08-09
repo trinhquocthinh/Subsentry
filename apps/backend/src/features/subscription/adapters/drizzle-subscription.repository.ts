@@ -104,6 +104,12 @@ export class DrizzleSubscriptionRepository implements ISubscriptionRepository {
     return map;
   }
 
+  async findAll(): Promise<SubscriptionEntity[]> {
+    const rows = await this.db.select().from(subscriptions);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return rows.map((r: any) => this.mapToEntity(r));
+  }
+
   async create(data: CreateSubscriptionInput): Promise<SubscriptionEntity> {
     const [inserted] = await this.db
       .insert(subscriptions)

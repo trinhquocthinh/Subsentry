@@ -5,10 +5,12 @@ import {
 } from '../domain/subscription.entity';
 import type { ISubscriptionRepository } from '../domain/subscription-repository.interface';
 import type { SubscriptionExtraction } from '@/core/types/extraction';
+import type { SyncD1ToSheetsUseCase } from '../../sheets/use-cases/sync-d1-to-sheets.use-case';
 
 export interface HandleIncomingInvoiceInput {
   subscriberId: number;
   extraction: SubscriptionExtraction;
+  onAsyncWork?: (promise: Promise<void>) => void;
 }
 
 export interface HandleIncomingInvoiceResult {
@@ -18,7 +20,10 @@ export interface HandleIncomingInvoiceResult {
 }
 
 export class HandleIncomingInvoiceUseCase {
-  constructor(private subscriptionRepo: ISubscriptionRepository) {}
+  constructor(
+    private subscriptionRepo: ISubscriptionRepository,
+    private syncD1ToSheetsUseCase?: SyncD1ToSheetsUseCase
+  ) {}
 
   async execute(input: HandleIncomingInvoiceInput): Promise<HandleIncomingInvoiceResult> {
     const { subscriberId, extraction } = input;
@@ -44,6 +49,16 @@ export class HandleIncomingInvoiceUseCase {
         status: targetStatus,
       });
 
+      if (this.syncD1ToSheetsUseCase) {
+        const promise = this.syncD1ToSheetsUseCase.execute(updated).catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error('[HandleIncomingInvoice] Sync failed:', err);
+        });
+        if (input.onAsyncWork) {
+          input.onAsyncWork(promise);
+        }
+      }
+
       return {
         subscription: updated,
         isReopened: wasKilled,
@@ -65,6 +80,16 @@ export class HandleIncomingInvoiceUseCase {
       directKillLink: null,
       paymentCardId: null,
     });
+
+    if (this.syncD1ToSheetsUseCase) {
+      const promise = this.syncD1ToSheetsUseCase.execute(created).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error('[HandleIncomingInvoice] Sync failed:', err);
+      });
+      if (input.onAsyncWork) {
+        input.onAsyncWork(promise);
+      }
+    }
 
     return {
       subscription: created,

@@ -8,6 +8,9 @@ import { MockNotificationService } from './features/alert/adapters/mock-notifica
 import { DrizzleSubscriptionRepository } from './features/subscription/adapters/drizzle-subscription.repository';
 import { DrizzleMemberRepository } from './features/subscription/adapters/drizzle-member.repository';
 import { DrizzlePaymentCardRepository } from './features/subscription/adapters/drizzle-payment-card.repository';
+import { GoogleSheetsClientAdapter } from './features/sheets/adapters/google-sheets-client.adapter';
+import { SyncSheetsToD1UseCase } from './features/sheets/use-cases/sync-sheets-to-d1.use-case';
+import { SyncD1ToSheetsUseCase } from './features/sheets/use-cases/sync-d1-to-sheets.use-case';
 import { createDbClient } from './core/db';
 import { globalErrorHandler, notFoundHandler } from './core/errors/error-handler';
 import { requestLogger } from './core/middleware/logger';
@@ -29,6 +32,9 @@ export type Bindings = {
   OPENAI_API_KEY?: string;
   ALLOWED_EMAIL_TO?: string;
   GMAIL_WEBHOOK_SECRET?: string;
+  GOOGLE_SHEET_ID?: string;
+  GOOGLE_SERVICE_ACCOUNT_EMAIL?: string;
+  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?: string;
   [key: string]: unknown;
 };
 
@@ -101,7 +107,36 @@ export default {
       paymentCardRepo
     );
 
-    ctx.waitUntil(Promise.all([retryUseCase.execute(), alertUseCase.execute()]));
+    const promises: Promise<unknown>[] = [retryUseCase.execute(), alertUseCase.execute()];
+
+    if (
+      env.GOOGLE_SHEET_ID &&
+      env.GOOGLE_SERVICE_ACCOUNT_EMAIL &&
+      env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+    ) {
+      const sheetsClient = new GoogleSheetsClientAdapter(
+        env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
+        env.GOOGLE_SHEET_ID
+      );
+      const syncD1ToSheetsUseCase = new SyncD1ToSheetsUseCase(sheetsClient, memberRepo);
+      const syncSheetsToD1UseCase = new SyncSheetsToD1UseCase(
+        sheetsClient,
+        subscriptionRepo,
+        syncD1ToSheetsUseCase
+      );
+      promises.push(
+        syncSheetsToD1UseCase
+          .execute()
+          .then(() => {})
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error(err);
+          })
+      );
+    }
+
+    ctx.waitUntil(Promise.all(promises));
   },
   email: async (
     message: CloudflareForwardableEmailMessage,

@@ -1,15 +1,17 @@
 import { ParsingLogStatus } from '@/core/types/enums';
-import { parsingLogs, subscriptions } from '@/core/db/schema';
+import { parsingLogs, subscriptions, members } from '@/core/db/schema';
 import type { IParserService, ParseInput } from '@/features/parser/domain/parser-service.interface';
 import type { SubscriptionExtraction } from '@/core/types/extraction';
 import {
   sanitizeRawContent,
   mapExtractionToSubscriptionInsertValues,
 } from '@/features/parser/utils';
+import type { SyncD1ToSheetsUseCase } from '@/features/sheets/use-cases/sync-d1-to-sheets.use-case';
 
 export interface ParseReceiptInput extends ParseInput {
   subscriberId?: number;
   googleSheetsUrl?: string;
+  onAsyncWork?: (promise: Promise<void>) => void;
 }
 
 export interface ParseReceiptResult {
@@ -24,7 +26,8 @@ export class ParseReceiptUseCase {
   constructor(
     private parserService: IParserService,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private db: any
+    private db: any,
+    private syncD1ToSheetsUseCase?: SyncD1ToSheetsUseCase
   ) {}
 
   private async recordParsingLog(
@@ -93,6 +96,18 @@ export class ParseReceiptUseCase {
           extraction,
           ParsingLogStatus.SUCCESS
         );
+
+        if (this.syncD1ToSheetsUseCase && newSub) {
+          const promise = this.syncD1ToSheetsUseCase
+            .execute(newSub as unknown as Parameters<typeof this.syncD1ToSheetsUseCase.execute>[0])
+            .catch((err) => {
+              // eslint-disable-next-line no-console
+              console.error('[ParseReceipt] Sync failed:', err);
+            });
+          if (input.onAsyncWork) {
+            input.onAsyncWork(promise);
+          }
+        }
 
         return {
           status: 'AUTO_SAVED',

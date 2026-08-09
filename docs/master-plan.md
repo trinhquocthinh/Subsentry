@@ -29,7 +29,7 @@
 | 6   | ~~Tích hợp Zalo OA~~ (đã ngừng, xem Epic 7) | Epic 3, 4          | ⚫      | [sdd.md](sdd.md)                                                                 |
 | 7   | Tích hợp Telegram Bot                       | Epic 3, 4          | 🔴      | [sdd.md](sdd.md)                                                                 |
 | 8   | Tích hợp Cloudflare Email Routing           | Epic 3             | 🔴      | [model-c4.md](model-c4.md)                                                       |
-| 9   | Đồng bộ Google Sheets (2-way)               | Epic 1, 4          | 🟡      | [business-rules.md](business-rules.md)                                           |
+| 9   | Đồng bộ Google Sheets (2-way)               | Epic 1, 4          | 🟢      | [business-rules.md](business-rules.md)                                           |
 | 10  | Admin & Ops Endpoint                        | Epic 9             | 🟡      | [disaster-recovery-fallback.md](disaster-recovery-fallback.md)                   |
 | 11  | Frontend React SPA (Telegram Mini App)      | Epic 7             | 🟡      | [techspec.md](techspec.md), [model-c4.md](model-c4.md)                           |
 | 12  | Bảo mật & Tuân thủ                          | Epic 7, 8, 10      | 🔴      | [sdd.md](sdd.md) §4, [business-rules.md](business-rules.md) BR-09                |
@@ -358,27 +358,27 @@
 
 ---
 
-## Epic 9 — Đồng Bộ Google Sheets (2-way Sync) 🟡
+## Epic 9 — Đồng Bộ Google Sheets (2-way Sync) 🟢
 
 ### Task 9.1 — Google Sheets API Client `M`
 
-- [ ] 9.1.1 Thiết lập Service Account / OAuth, lưu `GOOGLE_SHEETS_API_KEY`.
+- [x] 9.1.1 Thiết lập Service Account / OAuth, lưu `GOOGLE_SHEETS_API_KEY`.
 
-- [ ] 9.1.2 Viết wrapper gọi Sheets API (append row, read range, update row).
+- [x] 9.1.2 Viết wrapper gọi Sheets API (append row, read range, update row).
 
 ### Task 9.2 — Sync Chiều Đi (D1 → Sheets) `M`
 
-- [ ] 9.2.1 Sau mỗi thay đổi `subscriptions`, đẩy dòng tương ứng lên Sheets ngay lập tức.
+- [x] 9.2.1 Sau mỗi thay đổi `subscriptions`, đẩy dòng tương ứng lên Sheets ngay lập tức.
 
 ### Task 9.3 — Sync Chiều Về (Sheets → D1) `M`
 
-- [ ] 9.3.1 Cron hằng ngày quét Sheets, so khớp thay đổi thủ công (ngày gia hạn, số tiền...).
+- [x] 9.3.1 Cron hằng ngày quét Sheets, so khớp thay đổi thủ công (ngày gia hạn, số tiền...).
 
-- [ ] 9.3.2 Cập nhật lại D1 theo thay đổi phát hiện được.
+- [x] 9.3.2 Cập nhật lại D1 theo thay đổi phát hiện được.
 
 ### Task 9.4 — Test `S`
 
-- [ ] 9.4.1 Test round-trip: sửa tay trên Sheets → chạy cron → xác nhận D1 cập nhật đúng.
+- [x] 9.4.1 Test round-trip: sửa tay trên Sheets → chạy cron → xác nhận D1 cập nhật đúng.
 
 **✅ DoD Epic 9:** Đồng bộ 2 chiều hoạt động ổn định, không mất dữ liệu khi có xung đột đơn giản.
 
