@@ -26,3 +26,7 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lint-errors.txt
+
+# Backup files (Epic 14 — DR)
+apps/backend/backups/

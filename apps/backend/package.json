@@ -10,6 +10,8 @@
     "db:migrate:prod": "wrangler d1 migrations apply subsentry-db --remote",
     "db:seed:local": "wrangler d1 execute subsentry-db --local --file=./src/db/seed.sql",
     "db:seed:prod": "wrangler d1 execute subsentry-db --remote --file=./src/db/seed.sql",
+    "db:backup": "bash scripts/backup-d1.sh",
+    "db:restore": "bash scripts/restore-d1.sh",
     "test": "vitest run",
     "test:watch": "vitest"
   },
