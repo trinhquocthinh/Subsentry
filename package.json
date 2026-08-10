@@ -14,7 +14,9 @@
     "lint": "eslint .",
     "duplicate:check": "jscpd apps/ --config .jscpd.json",
     "deadcode:check": "knip",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:frontend": "yarn workspace @subsentry/frontend test"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260801.1",

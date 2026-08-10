@@ -13,7 +13,10 @@ yarn duplicate:check || exit 1
 echo "🛡️ Subsentry Quality Gate: Đang quét mã chết (Knip)..."
 yarn deadcode:check || exit 1
 
-echo "🛡️ Subsentry Quality Gate: Đang chạy Unit Tests (Vitest)..."
+echo "🛡️ Subsentry Quality Gate: Đang chạy Unit Tests + Coverage (Vitest)..."
 yarn test || exit 1
+
+echo "🛡️ Subsentry Quality Gate: Đang chạy Frontend Tests..."
+yarn test:frontend || exit 1
 
 echo "✅ Đạt chuẩn! Cho phép commit."

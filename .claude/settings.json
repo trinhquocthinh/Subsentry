@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yarn workspace *)",
+      "Bash(yarn format:check)",
+      "Bash(yarn format *)",
+      "Bash(yarn lint *)",
+      "Bash(yarn duplicate:check)",
+      "Bash(yarn deadcode:check)",
+      "Bash(yarn test *)",
+      "Bash(yarn test:frontend)",
+      "Bash(git config *)"
+    ]
+  }
+}

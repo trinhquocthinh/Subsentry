@@ -1,10 +1,8 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { eq } from 'drizzle-orm';
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
-import path from 'node:path';
 import worker from '@/index';
+import { createTestDatabase } from '@/test/d1-test-bridge';
+import { processTelegramUpdate } from './telegram.router';
 import { members, subscriptions, alerts } from '@/core/db/schema';
 import {
   TelegramClientAdapter,
@@ -13,61 +11,17 @@ import {
 import type { SubscriptionExtraction } from '@/core/types/extraction';
 import type { TelegramUpdate } from './domain/telegram-payload.interface';
 
-const migrationsFolder = path.resolve(__dirname, '../../../drizzle');
 const TELEGRAM_SECRET = 'test_telegram_webhook_secret_123';
 
-function createBetterSqliteD1Bridge(sqlite: InstanceType<typeof Database>): D1Database {
-  return {
-    prepare(query: string) {
-      return {
-        bind(...params: unknown[]) {
-          return {
-            async all() {
-              const stmt = sqlite.prepare(query);
-              const results = stmt.all(...params);
-              return { results, success: true, meta: {} };
-            },
-            async first(colName?: string) {
-              const stmt = sqlite.prepare(query);
-              const row = stmt.get(...params) as Record<string, unknown> | undefined;
-              if (!row) return null;
-              return colName ? row[colName] : row;
-            },
-            async run() {
-              const stmt = sqlite.prepare(query);
-              const info = stmt.run(...params);
-              return {
-                success: true,
-                meta: { changes: info.changes, last_row_id: info.lastInsertRowid },
-              };
-            },
-            async raw() {
-              const stmt = sqlite.prepare(query);
-              return stmt.raw().all(...params);
-            },
-          };
-        },
-      };
-    },
-    async exec(query: string) {
-      sqlite.exec(query);
-      return { count: 1, duration: 0 };
-    },
-  } as unknown as D1Database;
-}
-
 describe('Epic 7 — Telegram Bot Integration Tests', () => {
-  let sqlite: InstanceType<typeof Database>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let db: any;
+  let db: Awaited<ReturnType<typeof createTestDatabase>>['db'];
   let mockD1: D1Database;
 
-  beforeEach(() => {
-    sqlite = new Database(':memory:');
-    sqlite.pragma('foreign_keys = ON');
-    db = drizzle(sqlite);
-    migrate(db, { migrationsFolder });
-    mockD1 = createBetterSqliteD1Bridge(sqlite);
+  beforeEach(async () => {
+    const testDb = await createTestDatabase();
+    testDb.sqlite.pragma('foreign_keys = ON');
+    db = testDb.db;
+    mockD1 = testDb.d1;
   });
 
   describe('Task 7.2 — Xác thực X-Telegram-Bot-Api-Secret-Token', () => {
@@ -446,6 +400,195 @@ describe('Epic 7 — Telegram Bot Integration Tests', () => {
         'tg_owner_2',
         expect.stringContaining('RED ALERT')
       );
+    });
+  });
+
+  describe('POST /webhook/telegram — validate payload', () => {
+    it('trả 400 khi body không phải JSON hợp lệ', async () => {
+      const res = await worker.fetch(
+        new Request('http://localhost/webhook/telegram', {
+          method: 'POST',
+          headers: { 'X-Telegram-Bot-Api-Secret-Token': TELEGRAM_SECRET },
+          body: 'đây-không-phải-json',
+        }),
+        { DB: mockD1, TELEGRAM_WEBHOOK_SECRET: TELEGRAM_SECRET }
+      );
+      const json = (await res.json()) as { error: { code: string; message: string } };
+
+      expect(res.status).toBe(400);
+      expect(json.error.message).toContain('Invalid JSON');
+    });
+
+    it('trả 400 khi body rỗng (thiếu raw body)', async () => {
+      const res = await worker.fetch(
+        new Request('http://localhost/webhook/telegram', {
+          method: 'POST',
+          headers: { 'X-Telegram-Bot-Api-Secret-Token': TELEGRAM_SECRET },
+          body: '',
+        }),
+        { DB: mockD1, TELEGRAM_WEBHOOK_SECRET: TELEGRAM_SECRET }
+      );
+      const json = (await res.json()) as { error: { message: string } };
+
+      expect(res.status).toBe(400);
+      expect(json.error.message).toContain('Missing raw request body');
+    });
+  });
+
+  describe('processTelegramUpdate — nhánh biên', () => {
+    const fakeClient = () => ({
+      sendMessage: vi.fn().mockResolvedValue(true),
+      answerCallbackQuery: vi.fn().mockResolvedValue(true),
+      getFileAsDataUrl: vi.fn().mockResolvedValue(null),
+    });
+
+    const run = (
+      update: TelegramUpdate,
+      client: ReturnType<typeof fakeClient>,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      parserOverride?: any
+    ) =>
+      processTelegramUpdate(update, db, {
+        telegramClientOverride: client,
+        parserServiceOverride: parserOverride ?? {
+          extractSubscriptionData: vi.fn().mockResolvedValue(null),
+        },
+      });
+
+    it('bỏ qua update không có message lẫn callback_query', async () => {
+      const client = fakeClient();
+
+      await run({ update_id: 1 } as TelegramUpdate, client);
+
+      expect(client.sendMessage).not.toHaveBeenCalled();
+      expect(client.answerCallbackQuery).not.toHaveBeenCalled();
+    });
+
+    it('bỏ qua message thiếu chat.id', async () => {
+      const client = fakeClient();
+
+      await run({ update_id: 1, message: { text: 'hello' } } as TelegramUpdate, client);
+
+      expect(client.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('chỉ answerCallbackQuery khi callback_data sai định dạng', async () => {
+      const client = fakeClient();
+
+      await run(
+        {
+          update_id: 1,
+          callback_query: { id: 'cbq-1', from: { id: 123 }, data: 'DATA_KHONG_HOP_LE' },
+        } as TelegramUpdate,
+        client
+      );
+
+      expect(client.answerCallbackQuery).toHaveBeenCalledWith('cbq-1');
+      expect(client.sendMessage).not.toHaveBeenCalled();
+    });
+
+    it('chỉ answerCallbackQuery khi callback_query thiếu from.id', async () => {
+      const client = fakeClient();
+
+      await run(
+        {
+          update_id: 1,
+          callback_query: { id: 'cbq-2', data: 'ACTION_KEEP_SUB_ID_1' },
+        } as TelegramUpdate,
+        client
+      );
+
+      expect(client.answerCallbackQuery).toHaveBeenCalledWith('cbq-2');
+    });
+
+    it('báo lỗi về Telegram khi subscription không tồn tại (nhánh catch)', async () => {
+      const client = fakeClient();
+
+      await run(
+        {
+          update_id: 1,
+          callback_query: { id: 'cbq-3', from: { id: 123 }, data: 'ACTION_KILL_SUB_ID_9999' },
+        } as TelegramUpdate,
+        client
+      );
+
+      expect(client.answerCallbackQuery).toHaveBeenCalledWith('cbq-3', 'Lỗi xử lý yêu cầu');
+      expect(client.sendMessage.mock.calls[0][1]).toContain('Không tìm thấy subscription #9999');
+    });
+
+    it('xử lý ACTION_KEEP (không kèm ALERT) và phản hồi trạng thái ACTIVE', async () => {
+      const [member] = await db
+        .insert(members)
+        .values({ displayName: 'Con Cả', role: 'SUBSCRIBER', telegramChatId: '123' })
+        .returning();
+      const [sub] = await db
+        .insert(subscriptions)
+        .values({
+          merchantName: 'Netflix',
+          amount: 260000,
+          currency: 'VND',
+          subscriberId: member.id,
+          status: 'TRIAL',
+          billingCycle: 'MONTHLY',
+          nextBillingDate: '2099-01-01',
+          confidenceScore: 0.9,
+        })
+        .returning();
+      const client = fakeClient();
+
+      await run(
+        {
+          update_id: 1,
+          callback_query: {
+            id: 'cbq-4',
+            from: { id: 123 },
+            data: `ACTION_KEEP_SUB_ID_${sub.id}`,
+          },
+        } as TelegramUpdate,
+        client
+      );
+
+      expect(client.answerCallbackQuery).toHaveBeenCalledWith('cbq-4', 'Đã xác nhận GIỮ');
+      expect(client.sendMessage.mock.calls[0][1]).toContain('GIỮ dịch vụ Netflix');
+
+      const [updated] = await db.select().from(subscriptions).where(eq(subscriptions.id, sub.id));
+      expect(updated.status).toBe('ACTIVE');
+    });
+
+    it('cảnh báo khi không tải được ảnh đính kèm', async () => {
+      const client = fakeClient();
+      client.getFileAsDataUrl.mockResolvedValue(null);
+
+      await run(
+        {
+          update_id: 1,
+          message: {
+            chat: { id: 445566, type: 'private' },
+            photo: [{ file_id: 'small' }, { file_id: 'large' }],
+          },
+        } as TelegramUpdate,
+        client
+      );
+
+      expect(client.getFileAsDataUrl).toHaveBeenCalledWith('large');
+      expect(client.sendMessage.mock.calls[0][1]).toContain('Không thể tải ảnh đính kèm');
+    });
+
+    it('tự tạo member mới khi telegramChatId chưa tồn tại', async () => {
+      const client = fakeClient();
+
+      await run(
+        {
+          update_id: 1,
+          message: { chat: { id: 998877, type: 'private' }, text: 'tin nhắn bất kỳ' },
+        } as TelegramUpdate,
+        client
+      );
+
+      const created = await db.select().from(members).where(eq(members.telegramChatId, '998877'));
+      expect(created).toHaveLength(1);
+      expect(created[0].displayName).toContain('998877');
+      expect(created[0].role).toBe('SUBSCRIBER');
     });
   });
 });

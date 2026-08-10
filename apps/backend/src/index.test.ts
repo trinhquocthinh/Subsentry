@@ -1,60 +1,8 @@
 import { eq } from 'drizzle-orm';
 import { describe, expect, it, vi } from 'vitest';
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
-import path from 'node:path';
 import worker from './index';
 import { alerts, members, paymentCards, subscriptions } from './core/db/schema';
-
-const migrationsFolder = path.resolve(__dirname, '../drizzle');
-
-function createBetterSqliteD1Bridge(sqlite: InstanceType<typeof Database>): D1Database {
-  return {
-    prepare(query: string) {
-      return {
-        bind(...params: unknown[]) {
-          return {
-            async all() {
-              const stmt = sqlite.prepare(query);
-              const results = stmt.all(...params);
-              return { results, success: true, meta: {} };
-            },
-            async first(colName?: string) {
-              const stmt = sqlite.prepare(query);
-              const row = stmt.get(...params) as Record<string, unknown> | undefined;
-              if (!row) return null;
-              return colName ? row[colName] : row;
-            },
-            async run() {
-              const stmt = sqlite.prepare(query);
-              const info = stmt.run(...params);
-              return {
-                success: true,
-                meta: { changes: info.changes, last_row_id: info.lastInsertRowid },
-              };
-            },
-            async raw() {
-              const stmt = sqlite.prepare(query);
-              return stmt.raw().all(...params);
-            },
-          };
-        },
-      };
-    },
-    async batch(statements: unknown[]) {
-      const results = [];
-      for (const stmt of statements as Array<{ run: () => Promise<unknown> }>) {
-        results.push(await stmt.run());
-      }
-      return results;
-    },
-    async exec(query: string) {
-      sqlite.exec(query);
-      return { count: 1, duration: 0 };
-    },
-  } as unknown as D1Database;
-}
+import { createTestDatabase } from './test/d1-test-bridge';
 
 describe('Epic 2 - Refactored Hono Kernel Test', () => {
   it('GET /health-check trả về 200 OK khi DB sẵn sàng', async () => {
@@ -88,10 +36,8 @@ describe('Epic 2 - Refactored Hono Kernel Test', () => {
   });
 
   it('scheduled() end-to-end: khởi tạo D1 thực tế, gọi ProcessTieredAlertsUseCase & RetryFailedParsingLogsUseCase và tạo bản ghi alerts thành công', async () => {
-    const sqlite = new Database(':memory:');
+    const { sqlite, db, d1: mockD1 } = await createTestDatabase();
     sqlite.pragma('foreign_keys = ON');
-    const db = drizzle(sqlite);
-    migrate(db, { migrationsFolder });
 
     // Seed data
     const [subscriber] = await db
@@ -130,8 +76,6 @@ describe('Epic 2 - Refactored Hono Kernel Test', () => {
         isMustKeep: false,
       })
       .returning();
-
-    const mockD1 = createBetterSqliteD1Bridge(sqlite);
 
     const waitUntil = vi.fn((promise: Promise<unknown>) => promise);
     const mockCtx = {
@@ -225,5 +169,170 @@ describe('Epic 12 - Rate Limit Wiring Integration', () => {
     expect(res.status).toBe(500);
     const body = await res.json();
     expect(body).toMatchObject({ error: { code: 'SERVER_MISCONFIGURED' } });
+  });
+});
+
+describe('Worker kernel — route gốc & health-check', () => {
+  it('GET / trả về banner của API kernel', async () => {
+    const res = await worker.fetch(new Request('http://localhost/'));
+
+    expect(res.status).toBe(200);
+    await expect(res.text()).resolves.toBe('Subsentry API Kernel Active');
+  });
+
+  it('GET /health-check trả 500 disconnected khi query D1 ném lỗi', async () => {
+    const fail = async () => {
+      throw new Error('D1_ERROR: no such table');
+    };
+    const brokenD1 = {
+      prepare: () => ({ bind: () => ({ run: fail }), run: fail }),
+    } as unknown as D1Database;
+
+    const res = await worker.fetch(new Request('http://localhost/health-check'), { DB: brokenD1 });
+    const body = (await res.json()) as { database: string; error: string };
+
+    expect(res.status).toBe(500);
+    expect(body.database).toBe('disconnected');
+    // Drizzle bọc lại lỗi gốc, nhưng thông điệp thật vẫn phải được truyền ra ngoài
+    expect(body.error).toContain('SELECT 1');
+  });
+});
+
+describe('CORS cho /api/* (Task 11 — Telegram Mini App)', () => {
+  const preflight = (origin?: string) =>
+    worker.fetch(
+      new Request('http://localhost/api/v1/subscriptions', {
+        method: 'OPTIONS',
+        headers: {
+          ...(origin ? { Origin: origin } : {}),
+          'Access-Control-Request-Method': 'GET',
+        },
+      }),
+      {}
+    );
+
+  it('phản chiếu origin localhost khi phát triển cục bộ', async () => {
+    const res = await preflight('http://localhost:5173');
+
+    expect(res.headers.get('access-control-allow-origin')).toBe('http://localhost:5173');
+  });
+
+  it('phản chiếu origin *.pages.dev của Cloudflare Pages', async () => {
+    const res = await preflight('https://subsentry.pages.dev');
+
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://subsentry.pages.dev');
+  });
+
+  it('ép về domain mặc định khi origin lạ (chặn cross-origin tuỳ tiện)', async () => {
+    const res = await preflight('https://ke-tan-cong.example.com');
+
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://subsentry.pages.dev');
+  });
+
+  it('cho phép * khi request không kèm header Origin', async () => {
+    const res = await preflight(undefined);
+
+    expect(res.headers.get('access-control-allow-origin')).toBe('*');
+  });
+});
+
+describe('Worker email() handler — Cloudflare Email Routing', () => {
+  const buildMessage = () =>
+    ({
+      from: 'billing@netflix.com',
+      to: 'subs@yourfamily.com',
+      headers: new Headers(),
+      raw: new Response('From: a@b.com\r\n\r\nhi').body as ReadableStream<Uint8Array>,
+      rawSize: 20,
+      setReject: vi.fn(),
+      forward: vi.fn(),
+    }) as unknown as Parameters<typeof worker.email>[0];
+
+  it('đẩy việc xử lý vào ctx.waitUntil khi có execution context', async () => {
+    const { d1 } = await createTestDatabase();
+    const waitUntil = vi.fn((p: Promise<unknown>) => p);
+    const ctx = { waitUntil } as unknown as ExecutionContext;
+
+    await worker.email(buildMessage(), { DB: d1, ALLOWED_EMAIL_TO: 'subs@yourfamily.com' }, ctx);
+
+    expect(waitUntil).toHaveBeenCalledTimes(1);
+    await waitUntil.mock.calls[0][0];
+  });
+
+  it('await trực tiếp khi không có ctx.waitUntil (fallback)', async () => {
+    const { d1 } = await createTestDatabase();
+
+    await expect(
+      worker.email(
+        buildMessage(),
+        { DB: d1, ALLOWED_EMAIL_TO: 'subs@yourfamily.com' },
+        undefined as unknown as ExecutionContext
+      )
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe('Worker scheduled() — nhánh đồng bộ Google Sheets', () => {
+  it('bỏ qua đồng bộ Sheets khi thiếu cấu hình service account', async () => {
+    const { d1 } = await createTestDatabase();
+    const waitUntil = vi.fn((p: Promise<unknown>) => p);
+
+    await worker.scheduled(
+      { cron: '0 1 * * *', scheduledTime: Date.now() } as unknown as ScheduledEvent,
+      { DB: d1, OPENAI_API_KEY: 'test-key', GOOGLE_SHEET_ID: 'sheet-1' }, // thiếu email + private key
+      { waitUntil } as unknown as ExecutionContext
+    );
+
+    await waitUntil.mock.calls[0][0];
+    expect(waitUntil).toHaveBeenCalledTimes(1);
+  });
+
+  it('nuốt lỗi đồng bộ Sheets để không làm hỏng cron (nhánh catch)', async () => {
+    const { d1 } = await createTestDatabase();
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // Không mock fetch -> lượt xin OAuth token sẽ thất bại và rơi vào .catch()
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('network unreachable'));
+    const waitUntil = vi.fn((p: Promise<unknown>) => p);
+
+    await worker.scheduled(
+      { cron: '0 1 * * *', scheduledTime: Date.now() } as unknown as ScheduledEvent,
+      {
+        DB: d1,
+        OPENAI_API_KEY: 'test-key',
+        GOOGLE_SHEET_ID: 'sheet-1',
+        GOOGLE_SERVICE_ACCOUNT_EMAIL: 'svc@example.com',
+        GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY:
+          '-----BEGIN PRIVATE KEY-----\ndGVzdA==\n-----END PRIVATE KEY-----',
+      },
+      { waitUntil } as unknown as ExecutionContext
+    );
+
+    // Promise.all không được reject — lỗi Sheets đã bị .catch() nuốt
+    await expect(waitUntil.mock.calls[0][0]).resolves.toBeDefined();
+
+    fetchSpy.mockRestore();
+    consoleError.mockRestore();
+  });
+
+  it('dùng TelegramNotificationAdapter thay cho mock khi có TELEGRAM_BOT_TOKEN', async () => {
+    const { d1 } = await createTestDatabase();
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}'));
+    const waitUntil = vi.fn((p: Promise<unknown>) => p);
+
+    await worker.scheduled(
+      { cron: '0 1 * * *', scheduledTime: Date.now() } as unknown as ScheduledEvent,
+      {
+        DB: d1,
+        OPENAI_API_KEY: 'test-key',
+        TELEGRAM_BOT_TOKEN: 'bot-token',
+        TELEGRAM_FAMILY_GROUP_CHAT_ID: 'group-1',
+      },
+      { waitUntil } as unknown as ExecutionContext
+    );
+
+    await expect(waitUntil.mock.calls[0][0]).resolves.toBeDefined();
+    fetchSpy.mockRestore();
   });
 });

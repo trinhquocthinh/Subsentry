@@ -36,8 +36,11 @@ jobs:
       - name: 💀 Dead Code Check (Knip)
         run: yarn deadcode:check
 
-      - name: 🧪 Run Unit Tests (Vitest)
+      - name: 🧪 Backend Tests + Coverage Gate (lines 85 / functions 90 / branches 80)
         run: yarn test
+
+      - name: ⚛️ Frontend Tests (Vitest + jsdom)
+        run: yarn test:frontend
 
       # --- CONTINUOUS DEPLOYMENT (CD) ---
       - name: 🚀 Deploy Backend to Cloudflare Workers
