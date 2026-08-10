@@ -16,25 +16,21 @@ Hệ thống hoạt động dựa trên nguyên tắc **Hợp tác tự nguyện
 
 - **Không** cài đặt ứng dụng theo dõi trên điện thoại của bất kỳ ai.
 - **Không** đọc trộm tin nhắn SMS cá nhân hay hòm thư email của mọi người.
-- Hệ thống chỉ tiếp nhận thông tin khi cả nhà **chủ động gửi ảnh biên lai** vào chat, hoặc cài đặt **bộ lọc chuyển tiếp email hóa đơn** một cách chọn lọc.
+- Hệ thống chỉ tiếp nhận thông tin khi cả nhà **chủ động gửi ảnh biên lai** vào chat, hoặc cài đặt **script quét hóa đơn chọn lọc ngay trên Gmail cá nhân** (không chuyển tiếp email đi đâu cả, vì gia đình không dùng tên miền riêng).
 
 ---
 
-#### 📬 2. Hướng Dẫn Cấu Hình Gmail Chuyển Tiếp Tự Động (Chỉ Làm 1 Lần Duy Nhất)
+#### 📬 2. Hướng Dẫn Cài Đặt Script Quét Hóa Đơn Trên Gmail (Chỉ Làm 1 Lần Duy Nhất)
 
-Để hệ thống tự động ghi nhận các gói đăng ký dùng thử hoặc hóa đơn mới từ Apple, Google, Netflix... cả nhà chỉ cần thiết lập bộ lọc chuyển tiếp tự động trên Gmail cá nhân theo các bước cực kỳ đơn giản sau:
+Để hệ thống tự động ghi nhận các gói đăng ký dùng thử hoặc hóa đơn mới từ Apple, Google, Netflix... mỗi thành viên chỉ cần cài **Google Apps Script** ngay trên Gmail cá nhân của mình theo các bước sau (script này chạy ngầm 10 phút/lần, chỉ quét email khớp domain nhà cung cấp/từ khóa hóa đơn, hoàn toàn không đụng tới email cá nhân khác — **không cần chuyển tiếp/forward email đi đâu cả**):
 
-- **Bước 1**: Đăng nhập Gmail trên máy tính cá nhân. Nhấp vào biểu tượng **Cài đặt (Răng cưa)** ở góc trên bên phải ➡️ Chọn **Xem tất cả cài đặt**.
-- **Bước 2**: Chọn tab **Chuyển tiếp và POP/IMAP** ➡️ Nhấp vào nút **Thêm địa chỉ chuyển tiếp**.
-- **Bước 3**: Nhập địa chỉ hòm thư chung của gia đình ta: `subs@yourfamily.com` (Địa chỉ này sẽ do Admin cung cấp chính xác) ➡️ Bấm **Tiếp theo** ➡️ **Chấp nhận**.
-- **Bước 4**: Tạo bộ lọc thông minh (Filter):
-  - Quay lại hộp tìm kiếm của Gmail, nhấp vào biểu tượng **Hiển thị tùy chọn tìm kiếm** (ở cuối thanh tìm kiếm).
-  - Tại ô **Có các từ**: Nhập các từ khóa sau: `trial OR subscription OR invoice OR "đăng ký" OR "hóa đơn" OR apple OR google OR netflix OR spotify`.
-  - Bấm **Tạo bộ lọc**.
-  - Đánh dấu vào ô **Chuyển tiếp thư đến địa chỉ**: Chọn `subs@yourfamily.com`.
-  - Bấm **Tạo bộ lọc** để hoàn tất.
+- **Bước 1**: Xin Admin cấp cho bạn 2 giá trị: `WORKER_URL` (địa chỉ Worker của gia đình) và `SECRET_TOKEN` (mã bí mật `GMAIL_WEBHOOK_SECRET` dùng chung).
+- **Bước 2**: Đăng nhập Gmail trên máy tính cá nhân, mở [script.google.com](https://script.google.com/) ➡️ Bấm **Dự án mới** (New project).
+- **Bước 3**: Xóa hết code mẫu, dán toàn bộ nội dung script [`gmail-apps-script.js`](../apps/backend/scripts/gmail-apps-script.js) do Admin cung cấp vào.
+- **Bước 4**: Điền đúng `WORKER_URL` và `SECRET_TOKEN` (giá trị nhận ở Bước 1) vào phần **CẤU HÌNH HỆ THỐNG** ở đầu script ➡️ Bấm **Lưu** (💾).
+- **Bước 5**: Chọn hàm `setupTrigger` ở menu thả xuống ➡️ Bấm **Chạy** (Run) ➡️ Bấm **Chấp nhận** khi Google hỏi cấp quyền truy cập Gmail.
 
-_Từ nay, chỉ những email chứa hóa đơn hoặc thông báo đăng ký dịch vụ mới được gửi về hệ thống, các email cá nhân khác của cả nhà hoàn toàn được giữ bảo mật 100%!_
+_Từ nay, script sẽ tự động quét những email chứa hóa đơn hoặc thông báo đăng ký dịch vụ ngay trong hộp thư của bạn và gửi về hệ thống, các email cá nhân khác hoàn toàn được giữ bảo mật 100%!_
 
 ---
 

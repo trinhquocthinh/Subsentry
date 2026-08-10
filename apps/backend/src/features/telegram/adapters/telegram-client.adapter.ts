@@ -121,7 +121,10 @@ export class TelegramClientAdapter implements ITelegramClient {
         return null;
       }
 
-      const contentType = downloadRes.headers.get('content-type') || 'image/jpeg';
+      let contentType = downloadRes.headers.get('content-type') || 'image/jpeg';
+      if (contentType === 'application/octet-stream' || !contentType.startsWith('image/')) {
+        contentType = 'image/jpeg';
+      }
       const arrayBuffer = await downloadRes.arrayBuffer();
       const base64 = Buffer.from(arrayBuffer).toString('base64');
       return `data:${contentType};base64,${base64}`;

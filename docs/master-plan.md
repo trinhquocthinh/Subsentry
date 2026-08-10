@@ -537,27 +537,27 @@
 
 ### Task 15.1 — Chuẩn Bị Onboarding `S`
 
-- [ ] 15.1.1 Gửi hướng dẫn [family-onboarding-guide.md](family-onboarding-guide.md) cho từng thành viên.
+- [x] 15.1.1 Gửi hướng dẫn [family-onboarding-guide.md](family-onboarding-guide.md) cho từng thành viên.
 
-- [ ] 15.1.2 Hỗ trợ từng người cấu hình Gmail auto-forward + filter từ khóa.
+- [x] 15.1.2 Hỗ trợ từng người cấu hình Gmail auto-forward + filter từ khóa.
 
 ### Task 15.2 — Thêm Thành Viên Vào Bot `S`
 
-- [ ] 15.2.1 Mời thành viên kích hoạt chat với Telegram Bot cho toàn bộ 10 thành viên (và thêm bot vào Nhóm Gia Đình).
+- [x] 15.2.1 Mời thành viên kích hoạt chat với Telegram Bot cho toàn bộ 10 thành viên (và thêm bot vào Nhóm Gia Đình).
 
-- [ ] 15.2.2 Test gửi thử 1 ảnh biên lai + 1 SMS mẫu từ mỗi thành viên.
+- [x] 15.2.2 Test gửi thử 1 ảnh biên lai + 1 SMS mẫu từ mỗi thành viên.
 
 ### Task 15.3 — Dry-Run Nội Bộ (1 tuần) `M`
 
-- [ ] 15.3.1 Theo dõi sát parsing_logs, alerts trong tuần đầu.
+- [x] 15.3.1 Theo dõi sát parsing_logs, alerts trong tuần đầu.
 
-- [ ] 15.3.2 Thu thập phản hồi, tinh chỉnh ngưỡng Confidence Score nếu cần.
+- [x] 15.3.2 Thu thập phản hồi, tinh chỉnh ngưỡng Confidence Score nếu cần.
 
 ### Task 15.4 — Go-Live Chính Thức `S`
 
-- [ ] 15.4.1 Deploy production chính thức qua CI/CD.
+- [x] 15.4.1 Deploy production chính thức qua CI/CD.
 
-- [ ] 15.4.2 Thông báo chính thức trong nhóm chat gia đình.
+- [x] 15.4.2 Thông báo chính thức trong nhóm chat gia đình.
 
 **✅ DoD Epic 15:** Toàn bộ gia đình đã onboard, hệ thống chạy ổn định qua ít nhất 1 chu kỳ cảnh báo thật (T-3 → T-24h) không lỗi.
 
