@@ -447,19 +447,19 @@
 
 ### Task 12.1 — Rà Soát Dữ Liệu Thẻ (BR-09) `S`
 
-- [ ] 12.1.1 Kiểm tra code không có chỗ nào lưu PAN/CVV/expiry đầy đủ.
+- [x] 12.1.1 Kiểm tra code không có chỗ nào lưu PAN/CVV/expiry đầy đủ.
 
 ### Task 12.2 — Rate Limiting Webhook `M`
 
-- [ ] 12.2.1 Áp dụng rate limit cơ bản (Cloudflare Rate Limiting rules) cho `/webhook/*` và `/api/admin/*`.
+- [x] 12.2.1 Áp dụng rate limit cơ bản (Cloudflare Rate Limiting rules) cho `/webhook/*` và `/api/admin/*`.
 
 ### Task 12.3 — Chống Prompt Injection `M`
 
-- [ ] 12.3.1 Sanitize nội dung email/SMS thô trước khi nhúng vào prompt gửi OpenAI (loại bỏ chỉ thị lạ, giới hạn độ dài).
+- [x] 12.3.1 Sanitize nội dung email/SMS thô trước khi nhúng vào prompt gửi OpenAI (loại bỏ chỉ thị lạ, giới hạn độ dài).
 
 ### Task 12.4 — Review Secrets Management `S`
 
-- [ ] 12.4.1 Xác nhận không có secret nào bị hardcode/commit vào git (`git log -p` scan, `.gitignore` kiểm tra `.env`).
+- [x] 12.4.1 Xác nhận không có secret nào bị hardcode/commit vào git (`git log -p` scan, `.gitignore` kiểm tra `.env`).
 
 **✅ DoD Epic 12:** Checklist bảo mật trong [sdd.md](sdd.md) §4 và [business-rules.md](business-rules.md) BR-09 được xác nhận 100% qua code review.
 
@@ -476,6 +476,8 @@
 - [ ] 13.2.1 TC-01 → TC-11 đầy đủ, pass 100%.
 
 - [ ] 13.2.2 Bổ sung test case mới phát sinh trong quá trình code (mọi hàm mới đều có test đi kèm — Function-Level Test Policy).
+
+- [ ] 13.2.3 **[Nợ kỹ thuật — phát hiện khi review Epic 12]** `yarn vitest run --coverage` đang fail ngưỡng toàn cục (`lines:85/functions:90/branches:80`) — đã xác nhận bằng `git stash` là tồn tại **từ trước Epic 12** (không phải do Epic 12 gây ra), chủ yếu do thiếu test cho một số component frontend (vd. `StatusBadge.tsx`) và vài use-case/adapter backend (`retry-failed-parsing-logs`, `telegram-client.adapter`). Cần bổ sung test để coverage toàn repo đạt ngưỡng, tránh CI luôn đỏ làm giảm tín hiệu của các PR sau.
 
 ### Task 13.3 — Pipeline Chất Lượng `S`
 

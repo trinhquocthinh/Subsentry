@@ -252,3 +252,22 @@ Hệ thống tiếp nhận hóa đơn email qua 2 kênh:
 ### 4.4 Bảo Vệ Endpoint Quản Trị (Admin Endpoint)
 
 - Endpoint `POST /api/admin/reconcile-sync` (xem `disaster-recovery-fallback.md`) bắt buộc yêu cầu header `Authorization: Bearer <ADMIN_API_TOKEN>` với token lưu trong Cloudflare Secrets (`ADMIN_API_TOKEN`), không dùng chung với bất kỳ token nào khác. Request thiếu hoặc sai token phải bị từ chối ngay với `401 Unauthorized`.
+
+### 4.5 Rate Limiting (Webhook & Admin)
+
+- **Cơ chế**: Dùng Cloudflare Workers Rate Limiting binding (`[[ratelimits]]` trong `wrangler.toml`), hoạt động không cần custom zone/domain nên tương thích với deployment hiện tại (chỉ dùng `workers.dev` subdomain, Free Tier).
+- **Binding**: 2 binding riêng biệt vì mỗi binding chỉ mang 1 ngưỡng `simple{limit,period}` cố định:
+  - `RATE_LIMITER_WEBHOOK` — áp dụng cho `/webhook/*` — 60 request/60 giây/IP.
+  - `RATE_LIMITER_ADMIN` — áp dụng cho `/api/admin/*` — 10 request/60 giây/IP (siết chặt hơn vì endpoint này chỉ chạy cron 1 lần/ngày + thao tác tay hiếm).
+- **Key strategy**: Lấy IP theo thứ tự ưu tiên `cf-connecting-ip` → `x-forwarded-for` (phần tử đầu) → `'unknown-ip'`, giống cách trích IP đã dùng trong audit log của `/api/admin` (`admin.router.ts`).
+  - ⚠️ **Lệch khỏi khuyến nghị chính thức của Cloudflare**: Cloudflare khuyến cáo không nên dùng IP làm key cho `RateLimit.limit()` vì nhiều user hợp lệ có thể share IP (NAT, mobile carrier) dẫn tới block nhầm lẫn nhau. Ở đây chấp nhận trade-off này có chủ đích vì: (1) `/webhook/*` chỉ nhận request từ hạ tầng Telegram Bot API / Google Apps Script chứ không phải IP thiết bị cá nhân của 10 thành viên, nên rủi ro NAT/shared-IP giữa các member gần như không tồn tại; (2) `/api/admin/*` có lượng gọi cực thấp (cron 1 lần/ngày + thao tác tay hiếm) nên rủi ro block nhầm cũng thấp. Nếu sau này có nhu cầu định danh chính xác hơn (vd. theo `chat_id`/token thay vì IP), cần đánh giá lại điểm này.
+- **Fail-open policy**: Nếu binding chưa được cấu hình (`undefined`), request vẫn được xử lý bình thường kèm `console.warn` — rate limiting là lớp phòng thủ bổ sung, không thay thế các cơ chế xác thực chữ ký/token ở §4.1-4.4 vốn đã fail-closed.
+- **Response khi vượt ngưỡng**: `429 Too Many Requests` với body `{ success: false, error: { code: 'RATE_LIMITED', message } }`, đúng format lỗi thống nhất của hệ thống.
+- **Lưu ý vận hành**: `namespace_id` trong `wrangler.toml` là số tùy chọn, chỉ cần duy nhất trong phạm vi các binding rate-limit của account Cloudflare. Nếu Worker khác trong cùng account cũng khai báo `[[ratelimits]]` với cùng `namespace_id`, 2 Worker đó sẽ **dùng chung bộ đếm** (đếm gộp, không tách riêng theo Worker) — xem ghi chú trong `wrangler.toml`.
+
+### 4.6 Chống Prompt Injection (Sanitize Input)
+
+- Mọi nội dung `TEXT` (email thô, SMS/chat text) được đưa qua `sanitizeRawContent()` (`apps/backend/src/features/parser/utils/sanitizer.ts`) trước khi nhúng vào prompt gửi OpenAI (xem §3), gồm 2 lớp:
+  1. Giới hạn độ dài tối đa 8000 ký tự (cắt bớt nếu vượt).
+  2. Blocklist theo regex cho các pattern giả mạo hướng dẫn hệ thống đã biết (`ignore previous instructions`, `system:`, `you are now a`, thẻ `<script>`...).
+- ⚠️ **Giới hạn của cơ chế**: Đây là blocklist theo pattern đã biết trước (defense-in-depth cơ bản), **không phải giải pháp chống prompt injection triệt để**. Kẻ tấn công có thể né bằng cách diễn đạt khác (chèn khoảng trắng lạ, unicode homoglyph, ngôn ngữ khác...). Giới hạn độ dài chỉ giảm blast radius (chi phí OpenAI, khả năng nhồi payload dài), không ngăn được injection tinh vi. Response từ OpenAI luôn được ràng buộc theo `EXTRACTION_JSON_SCHEMA` nghiêm ngặt (§3.1) nên rủi ro thực thi hành động ngoài ý muốn được giới hạn thêm ở tầng schema, nhưng đây vẫn không phải phòng tuyến duy nhất — cần theo dõi `parsing_logs` định kỳ để phát hiện pattern injection mới phát sinh.

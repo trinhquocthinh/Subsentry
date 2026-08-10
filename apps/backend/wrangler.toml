@@ -13,3 +13,16 @@ binding = "DB"
 database_name = "subsentry-db"
 database_id = "f84d61b2-d23a-4362-abfb-7510113b5326"
 migrations_dir = "drizzle"
+
+# Task 12.2: Rate Limiting binding (không cần zone/custom domain, dùng được trên Free Tier)
+# ⚠️ namespace_id chỉ cần duy nhất trong phạm vi account. Nếu account này có thêm Worker khác
+# cũng khai báo [[ratelimits]] trùng namespace_id, 2 Worker sẽ vô tình dùng chung bộ đếm.
+[[ratelimits]]
+name = "RATE_LIMITER_WEBHOOK"
+namespace_id = "1001"
+simple = { limit = 60, period = 60 }
+
+[[ratelimits]]
+name = "RATE_LIMITER_ADMIN"
+namespace_id = "1002"
+simple = { limit = 10, period = 60 }

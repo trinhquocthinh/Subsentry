@@ -161,3 +161,69 @@ describe('Epic 2 - Refactored Hono Kernel Test', () => {
     expect(createdAlerts[0].status).toBe('SENT');
   });
 });
+
+describe('Epic 12 - Rate Limit Wiring Integration', () => {
+  it('POST /webhook/telegram bị chặn 429 khi RATE_LIMITER_WEBHOOK báo vượt ngưỡng', async () => {
+    const env = {
+      RATE_LIMITER_WEBHOOK: { limit: vi.fn().mockResolvedValue({ success: false }) },
+    };
+
+    const res = await worker.fetch(
+      new Request('http://localhost/webhook/telegram', { method: 'POST' }),
+      env
+    );
+
+    expect(res.status).toBe(429);
+    const body = await res.json();
+    expect(body).toMatchObject({ success: false, error: { code: 'RATE_LIMITED' } });
+  });
+
+  it('POST /api/admin/reconcile-sync bị chặn 429 khi RATE_LIMITER_ADMIN báo vượt ngưỡng', async () => {
+    const env = {
+      RATE_LIMITER_ADMIN: { limit: vi.fn().mockResolvedValue({ success: false }) },
+    };
+
+    const res = await worker.fetch(
+      new Request('http://localhost/api/admin/reconcile-sync', { method: 'POST' }),
+      env
+    );
+
+    expect(res.status).toBe(429);
+    const body = await res.json();
+    expect(body).toMatchObject({ success: false, error: { code: 'RATE_LIMITED' } });
+  });
+
+  it('binding của group này không được dùng để chặn nhầm group khác (RATE_LIMITER_ADMIN không ảnh hưởng /webhook/*)', async () => {
+    const env = {
+      RATE_LIMITER_ADMIN: { limit: vi.fn().mockResolvedValue({ success: false }) },
+      // RATE_LIMITER_WEBHOOK không cấu hình -> fail-open, request phải đi tới telegramSignatureMiddleware
+    };
+
+    const res = await worker.fetch(
+      new Request('http://localhost/webhook/telegram', { method: 'POST' }),
+      env
+    );
+
+    // Không bị chặn bởi rate limiter (không phải 429) — bị telegramSignatureMiddleware từ chối vì thiếu secret
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body).toMatchObject({ error: { code: 'UNAUTHORIZED' } });
+  });
+
+  it('binding của group này không được dùng để chặn nhầm group khác (RATE_LIMITER_WEBHOOK không ảnh hưởng /api/admin/*)', async () => {
+    const env = {
+      RATE_LIMITER_WEBHOOK: { limit: vi.fn().mockResolvedValue({ success: false }) },
+      // RATE_LIMITER_ADMIN không cấu hình -> fail-open, request phải đi tới admin auth middleware
+    };
+
+    const res = await worker.fetch(
+      new Request('http://localhost/api/admin/reconcile-sync', { method: 'POST' }),
+      env
+    );
+
+    // Không bị chặn bởi rate limiter (không phải 429) — bị admin auth middleware từ chối vì thiếu ADMIN_API_TOKEN
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    expect(body).toMatchObject({ error: { code: 'SERVER_MISCONFIGURED' } });
+  });
+});

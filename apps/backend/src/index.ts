@@ -15,6 +15,7 @@ import { SyncD1ToSheetsUseCase } from './features/sheets/use-cases/sync-d1-to-sh
 import { createDbClient } from './core/db';
 import { globalErrorHandler, notFoundHandler } from './core/errors/error-handler';
 import { requestLogger } from './core/middleware/logger';
+import { rateLimiter, type RateLimiterBinding } from './core/middleware/rate-limit.middleware';
 
 import { telegramRouter } from './features/telegram/telegram.router';
 import {
@@ -39,6 +40,8 @@ export type Bindings = {
   GOOGLE_SHEET_ID?: string;
   GOOGLE_SERVICE_ACCOUNT_EMAIL?: string;
   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?: string;
+  RATE_LIMITER_WEBHOOK?: RateLimiterBinding;
+  RATE_LIMITER_ADMIN?: RateLimiterBinding;
   [key: string]: unknown;
 };
 
@@ -62,6 +65,10 @@ app.use(
     maxAge: 86400,
   })
 );
+
+// Task 12.2: Rate limiting cơ bản cho webhook & admin endpoint
+app.use('/webhook/*', rateLimiter('RATE_LIMITER_WEBHOOK'));
+app.use('/api/admin/*', rateLimiter('RATE_LIMITER_ADMIN'));
 
 // Mount feature routers
 app.route('/webhook/telegram', telegramRouter);
