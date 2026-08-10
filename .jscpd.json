@@ -13,7 +13,8 @@
     "**/*.sql",
     "**/*.json",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/api.router.ts"
   ],
   "format": ["typescript", "javascript"]
 }

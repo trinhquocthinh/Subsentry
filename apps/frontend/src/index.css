@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme Variables ── */
+:root {
+  --color-bg: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-elevated: #1c2128;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-text: #e6edf3;
+  --color-text-muted: #8b949e;
+  --radius-card: 16px;
+  --radius-badge: 8px;
+}
+
+/* ── Base Styles ── */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+}
+
+/* ── Component Utilities ── */
+@layer components {
+  /* Glassmorphism card */
+  .glass-card {
+    @apply rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-md shadow-glass;
+  }
+
+  /* Elevated surface card */
+  .surface-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-400 to-accent-400 bg-clip-text text-transparent;
+  }
+
+  /* Shimmer loading placeholder */
+  .shimmer {
+    @apply animate-shimmer bg-gradient-to-r from-surface-800 via-surface-700 to-surface-800;
+    background-size: 200% 100%;
+  }
+
+  /* Status badges */
+  .badge-trial {
+    @apply bg-amber-500/15 text-amber-400 border border-amber-500/20;
+  }
+
+  .badge-active {
+    @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/20;
+  }
+
+  .badge-pending-kill {
+    @apply bg-red-500/15 text-red-400 border border-red-500/20;
+  }
+
+  .badge-killed {
+    @apply bg-surface-600/30 text-surface-500 border border-surface-600/20;
+  }
+
+  /* Interactive hover card */
+  .hover-card {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .hover-card:hover {
+    @apply -translate-y-0.5 shadow-glow;
+    border-color: rgba(92, 124, 250, 0.2);
+  }
+
+  .hover-card:active {
+    @apply scale-[0.98];
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply px-4 py-2.5 rounded-xl bg-brand-600 text-white font-semibold
+      transition-all duration-200 hover:bg-brand-500 hover:shadow-glow
+      active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2.5 rounded-xl bg-red-600/80 text-white font-semibold
+      transition-all duration-200 hover:bg-red-500 hover:shadow-lg
+      active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2.5 rounded-xl bg-white/5 text-surface-300 font-medium
+      transition-all duration-200 hover:bg-white/10 hover:text-white
+      active:scale-95;
+  }
+}
+
+/* ── Utility Animations ── */
+@layer utilities {
+  .delay-75 {
+    animation-delay: 75ms;
+  }
+  .delay-150 {
+    animation-delay: 150ms;
+  }
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+}

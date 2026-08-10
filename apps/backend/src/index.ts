@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { RetryFailedParsingLogsUseCase } from './features/parser/use-cases/retry-failed-parsing-logs.use-case';
 import { OpenAIParserAdapter } from './features/parser/adapters/openai-parser.adapter';
 import { ProcessTieredAlertsUseCase } from './features/alert/use-cases/process-tiered-alerts.use-case';
@@ -24,6 +25,7 @@ import { handleEmailEvent } from './features/email/email.handler';
 import { emailRouter } from './features/email/email.router';
 import type { CloudflareForwardableEmailMessage } from './features/email/domain/email-message.interface';
 import { adminRouter } from './features/admin/admin.router';
+import { apiRouter } from './features/api/api.router';
 
 export type Bindings = {
   DB: D1Database;
@@ -44,10 +46,27 @@ const app = new Hono<{ Bindings: Bindings }>();
 
 // Middlewares
 app.use('*', requestLogger);
+app.use(
+  '/api/*',
+  cors({
+    origin: (origin) => {
+      // Allow localhost for dev, and Cloudflare Pages domains for prod
+      if (!origin) return '*';
+      if (origin.startsWith('http://localhost') || origin.endsWith('.pages.dev')) {
+        return origin;
+      }
+      return 'https://subsentry.pages.dev'; // Default fallback or exact custom domain if known
+    },
+    allowHeaders: ['Content-Type', 'X-Telegram-Init-Data'],
+    allowMethods: ['GET', 'POST', 'PATCH', 'OPTIONS'],
+    maxAge: 86400,
+  })
+);
 
 // Mount feature routers
 app.route('/webhook/telegram', telegramRouter);
 app.route('/webhook/email', emailRouter);
+app.route('/api/v1', apiRouter);
 app.route('/api/admin', adminRouter);
 
 // Global Error & 404 Handler

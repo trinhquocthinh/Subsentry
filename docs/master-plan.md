@@ -406,38 +406,38 @@
 
 ---
 
-## Epic 11 — Frontend: React SPA (Telegram Mini App) 🟡
+## Epic 11 — Frontend: React SPA (Telegram Mini App) 🟢
 
 ### Task 11.1 — Khởi Tạo Dự Án Frontend `S`
 
-- [ ] 11.1.1 Vite + React 18 + TypeScript + Tailwind CSS trong `apps/frontend`.
+- [x] 11.1.1 Vite + React 18 + TypeScript + Tailwind CSS trong `apps/frontend`.
 
-- [ ] 11.1.2 Cấu hình deploy Cloudflare Pages (`pages deploy dist`).
+- [x] 11.1.2 Cấu hình deploy Cloudflare Pages (`pages deploy dist`).
 
 ### Task 11.2 — Trang Dashboard Chính `L`
 
-- [ ] 11.2.1 Danh sách subscription (merchant, amount, next billing date, status).
+- [x] 11.2.1 Danh sách subscription (merchant, amount, next billing date, status).
 
-- [ ] 11.2.2 Biểu đồ tròn phân phối chi tiêu theo merchant/subscriber.
-- [ ] 11.2.3 Đồng hồ đếm ngược `Next Billing Date`.
+- [x] 11.2.2 Biểu đồ tròn phân phối chi tiêu theo merchant/subscriber.
+- [x] 11.2.3 Đồng hồ đếm ngược `Next Billing Date`.
 
 ### Task 11.3 — Trang Quản Lý Thẻ & Cấu Hình `M`
 
-- [ ] 11.3.1 Gán Card Owner cho subscription.
+- [x] 11.3.1 Gán Card Owner cho subscription.
 
-- [ ] 11.3.2 Sửa nhanh amount / next_billing_date / is_must_keep.
+- [x] 11.3.2 Sửa nhanh amount / next_billing_date / is_must_keep.
 
 ### Task 11.5 — Tích Hợp Telegram Mini App (Web App SDK) `M`
 
-- [ ] 11.5.1 Nhúng SPA làm Telegram Web App, lấy `user.id`/`initData` tự động qua `window.Telegram.WebApp`.
+- [x] 11.5.1 Nhúng SPA làm Telegram Web App, lấy `user.id`/`initData` tự động qua `window.Telegram.WebApp`.
 
 ### Task 11.6 — Kết Nối API Backend `M`
 
-- [ ] 11.6.1 Gọi API Worker (fetch/React Query), xử lý loading/error state.
+- [x] 11.6.1 Gọi API Worker (fetch/React Query), xử lý loading/error state.
 
 ### Task 11.7 — Test Cơ Bản 🟢 `S`
 
-- [ ] 11.7.1 Smoke test render Dashboard, test tương tác nút Keep/Kill.
+- [x] 11.7.1 Smoke test render Dashboard, test tương tác nút Keep/Kill.
 
 **✅ DoD Epic 11:** Thành viên gia đình mở Telegram Mini App thấy đúng dữ liệu, thao tác được Keep/Kill/sửa thẻ.
 
