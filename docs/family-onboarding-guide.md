@@ -2,7 +2,7 @@
 
 **Hướng Dẫn Thành Viên Tham Gia Mạng Lưới An Toàn Tài Chính Gia Đình** | _Simple, Privacy-First, For Everyone_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.3 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 Chào mừng cả nhà! **Subsentry** là một dự án nhỏ (Quality of Life) được xây dựng dành riêng cho gia đình chúng ta (khoảng 10 thành viên).
 

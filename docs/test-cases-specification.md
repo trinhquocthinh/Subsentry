@@ -2,7 +2,7 @@
 
 **Tài Liệu Đặc Tả Kịch Bản Kiểm Thử & Bộ Dữ Liệu Giả Lập** | _Strict Test-Driven QoL Engineering_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 Tài liệu này đặc tả chi tiết bộ kịch bản kiểm thử (Test Cases), các kịch bản biên (Edge Cases), và các dữ liệu giả lập (Mock Payloads / Test Vectors) phục vụ cho quá trình kiểm thử tự động bằng **Vitest** trên môi trường mô phỏng **Miniflare** (Cloudflare Workers).
 

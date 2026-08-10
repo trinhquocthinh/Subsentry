@@ -5,9 +5,10 @@ _Vigilant Defense for Your Digital Wallet — Zero-Friction Proactive Defense_
 
 | Metadata             | Details      |
 | -------------------- | ------------ |
-| **Document Version** | 1.0          |
+| **Document Version** | 1.2          |
 | **Status**           | Approved     |
 | **Primary Channels** | Telegram Bot |
+| **Last Updated**     | 2026-08-10   |
 
 ---
 

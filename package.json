@@ -3,20 +3,58 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "description": "Subsentry — Mạng lưới an toàn tài chính gia đình: tự động bóc tách hóa đơn bằng AI, theo dõi gói đăng ký và cảnh báo đa tầng trước khi bị trừ tiền oan. Chạy hoàn toàn serverless trên Cloudflare.",
+  "keywords": [
+    "subscription-tracker",
+    "free-trial",
+    "cloudflare-workers",
+    "cloudflare-d1",
+    "hono",
+    "drizzle-orm",
+    "telegram-bot",
+    "openai",
+    "clean-architecture",
+    "serverless"
+  ],
+  "author": "Thinh Quoc <koolmaster1408@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/trinhquocthinh/Subsentry#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trinhquocthinh/Subsentry.git"
+  },
+  "bugs": {
+    "url": "https://github.com/trinhquocthinh/Subsentry/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "yarn@1.22.22",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
+    "prepare": "husky",
     "backend:dev": "yarn workspace @subsentry/backend dev",
+    "backend:deploy": "yarn workspace @subsentry/backend deploy",
     "frontend:dev": "yarn workspace @subsentry/frontend dev",
+    "frontend:build": "yarn workspace @subsentry/frontend build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "duplicate:check": "jscpd apps/ --config .jscpd.json",
     "deadcode:check": "knip",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
-    "test:frontend": "yarn workspace @subsentry/frontend test"
+    "test:frontend": "yarn workspace @subsentry/frontend test",
+    "db:generate": "yarn workspace @subsentry/backend db:generate",
+    "db:migrate:local": "yarn workspace @subsentry/backend db:migrate:local",
+    "db:migrate:prod": "yarn workspace @subsentry/backend db:migrate:prod",
+    "db:seed:local": "yarn workspace @subsentry/backend db:seed:local",
+    "db:backup": "yarn workspace @subsentry/backend db:backup",
+    "db:restore": "yarn workspace @subsentry/backend db:restore",
+    "verify": "yarn format:check && yarn lint && yarn duplicate:check && yarn deadcode:check && yarn test && yarn test:frontend"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260801.1",

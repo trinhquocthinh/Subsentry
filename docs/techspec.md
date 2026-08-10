@@ -2,18 +2,22 @@
 
 **Kiến Trúc Hệ Thống & Đặc Tả Kỹ Thuật Dự Án** | _Enterprise-Grade Clean Architecture for Family Project_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 
-| Technology Dimension         | Selected Stack & Version                              |
-| ---------------------------- | ----------------------------------------------------- |
-| **Monorepo Manager**         | Yarn Workspaces (v1.22.x / v4.x)                      |
-| **Backend API Framework**    | Hono Framework (v4.5.x) on Cloudflare Workers         |
-| **Database & ORM**           | Cloudflare D1 (SQLite) & Drizzle ORM (v0.32.x)        |
-| **Frontend Framework**       | React (v18.3.x) + Vite (v5.x) + Tailwind CSS (v3.x)   |
-| **Frontend Deploy Platform** | Cloudflare Pages (Serverless Single Page Application) |
-| **Linter & Formatter**       | ESLint (v9.x Flat Config) & Prettier (v3.x)           |
-| **Quality Gates Tools**      | Husky (v9.x), jscpd (v3.x), Knip (v3.x)               |
-| **Testing Engine**           | Vitest (v2.0.x)                                       |
+| Technology Dimension         | Selected Stack & Version                                     |
+| ---------------------------- | ------------------------------------------------------------ |
+| **Monorepo Manager**         | Yarn Workspaces (v1.22.x / v4.x)                             |
+| **Backend API Framework**    | Hono Framework (v4.12.x) on Cloudflare Workers               |
+| **Database & ORM**           | Cloudflare D1 (SQLite) & Drizzle ORM (v0.45.x) + Drizzle Kit |
+| **AI Parser Engine**         | OpenAI SDK (v7.x) — model `gpt-4o-mini`                      |
+| **Email Ingestion**          | Cloudflare Email Routing + `postal-mime` (v2.3.x)            |
+| **Frontend Framework**       | React (v18.3.x) + Vite (v8.x) + Tailwind CSS (v3.x)          |
+| **Frontend Data Layer**      | TanStack React Query (v5.x) + Recharts (v2.15.x)             |
+| **Frontend Deploy Platform** | Cloudflare Pages (Serverless Single Page Application)        |
+| **Linter & Formatter**       | ESLint (v9.x Flat Config) & Prettier (v3.x)                  |
+| **Quality Gates Tools**      | Husky (v9.x), jscpd (v5.x), Knip (v6.x)                      |
+| **Testing Engine**           | Vitest (v4.1.x) + Miniflare env, Testing Library (frontend)  |
+| **Runtime & Toolchain**      | Node.js v22 LTS, TypeScript v6.x, Wrangler CLI v4.x          |
 
 ---
 

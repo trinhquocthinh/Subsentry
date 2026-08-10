@@ -2,7 +2,7 @@
 
 **Quy Trình Khôi Phục & Xử Lý Sự Cố Hệ Thống** | _Zero-Ops Resilient QoL Infrastructure_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 Quy trình này cung cấp hướng dẫn chi tiết nhằm đảm bảo tính liên tục của hệ thống **Subsentry** phục vụ gia đình 10 thành viên. Dù chạy trên hạ tầng Serverless miễn phí và có độ tin cậy cao của Cloudflare, hệ thống vẫn phải chuẩn bị sẵn các kịch bản đối phó với sự cố kỹ thuật từ bên thứ ba (như sập API OpenAI, lỗi đồng bộ Google Sheets, lỗi nghẽn mạng...).
 

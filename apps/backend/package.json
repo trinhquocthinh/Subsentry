@@ -2,6 +2,17 @@
   "name": "@subsentry/backend",
   "version": "1.0.0",
   "private": true,
+  "description": "Subsentry API — Cloudflare Worker (Hono + D1 + Drizzle) xử lý bóc tách hóa đơn AI, máy trạng thái subscription, cảnh báo đa tầng và đồng bộ Google Sheets.",
+  "author": "Thinh Quoc <koolmaster1408@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trinhquocthinh/Subsentry.git",
+    "directory": "apps/backend"
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",

@@ -2,6 +2,8 @@
 
 **Quick-Access Disaster Recovery Playbook** | _Dành cho Admin (Bố)_
 
+**Document Version:** 1.0 | **Status:** Approved | **Last Updated:** 2026-08-10
+
 ---
 
 ## 📋 Checklist Backup Hàng Tháng

@@ -4,10 +4,11 @@
 
 | Document Metadata    | Details                           |
 | -------------------- | --------------------------------- |
-| **Document Version** | 1.0                               |
+| **Document Version** | 1.2                               |
 | **Target Audience**  | Family & Micro-Group (< 10 Users) |
 | **Primary Channels** | Telegram Bot, Cloudflare Email    |
 | **Status**           | Approved                          |
+| **Last Updated**     | 2026-08-10                        |
 
 ---
 

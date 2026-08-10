@@ -1,7 +1,7 @@
 ### 🌐 C4 ARCHITECTURE MODEL — Subsentry
 
 **Sơ Đồ Kiến Trúc Hệ Thống Theo Mô Hình C4 (C1 Context & C2 Container)** | _Enterprise-Grade System Design for Quality-of-Life Family Project_
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 ---
 
 #### 1. C1 - Sơ Đồ Ngữ Cảnh Hệ Thống (System Context Diagram)

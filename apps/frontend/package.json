@@ -3,6 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "description": "Subsentry Mini App — React SPA (Vite + Tailwind + React Query) chạy trong Telegram, hiển thị dashboard chi tiêu và thao tác Keep/Kill gói đăng ký.",
+  "author": "Thinh Quoc <koolmaster1408@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trinhquocthinh/Subsentry.git",
+    "directory": "apps/frontend"
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

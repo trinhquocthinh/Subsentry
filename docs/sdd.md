@@ -4,10 +4,11 @@
 
 | Document Metadata          | Details                            |
 | -------------------------- | ---------------------------------- |
-| **Document Version**       | 1.0                                |
+| **Document Version**       | 1.5                                |
 | **Target Architecture**    | Cloudflare Workers & Cloudflare D1 |
 | **Integration Interfaces** | Telegram Bot API, OpenAI API       |
 | **Status**                 | Approved                           |
+| **Last Updated**           | 2026-08-10                         |
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Hướng Dẫn Cấu Hình, Thiết Lập Môi Trường & Vận Hành** | _Zero-Ops Family Cooperative Defense_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.4 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 Tài liệu này cung cấp hướng dẫn từng bước (Step-by-Step) để triển khai, cài đặt môi trường phát triển cục bộ (Local Development) và thiết lập hệ thống tự động hóa vận hành trên Cloudflare cho dự án **Subsentry (Quality of Life)**.
 

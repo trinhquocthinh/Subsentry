@@ -9,7 +9,11 @@
       "Bash(yarn deadcode:check)",
       "Bash(yarn test *)",
       "Bash(yarn test:frontend)",
-      "Bash(git config *)"
+      "Bash(git config *)",
+      "Bash(yarn -v)",
+      "Bash(yarn typecheck *)",
+      "Bash(yarn verify *)",
+      "Bash(grep -E \"^\\(yarn|\\\\$|Done|error|✓|✗|Tests|Coverage|ERROR|All matched|Found\\)|error Command|Test Files|% \\(Lines|Funcs|Branch\\)|All files\")"
     ]
   }
 }

@@ -2,7 +2,7 @@
 
 **Lưu Đồ Nghiệp Vụ Xử Lý Dữ Liệu & Cảnh Báo Đa Tầng** | _Visual Flowcharts detailing AI Parsing Validation & Escalation Logic_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 ---
 

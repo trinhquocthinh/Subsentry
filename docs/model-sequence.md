@@ -2,7 +2,7 @@
 
 **Sơ Đồ Tuần Tự Tương Tác Thời Gian Thực** | _UML Sequence Diagrams for Real-time Transaction Parsing and Alert Response_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 ---
 

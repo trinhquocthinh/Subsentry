@@ -4,10 +4,12 @@
 
 | Metadata             | Details                                                                                |
 | -------------------- | -------------------------------------------------------------------------------------- |
-| **Document Version** | 1.0                                                                                    |
+| **Document Version** | 1.2                                                                                    |
 | **Core Philosophy**  | Cooperative Safety Net (Mạng lưới an toàn cộng tác)                                    |
 | **Target Market**    | Family & Micro-Group (< 10 users - Dự án Quality of Life phi thương mại)               |
 | **Tech Stack**       | Cloudflare Workers, Cloudflare D1, Cloudflare Email Routing, Telegram Bot, GPT-4o-mini |
+| **Status**           | Approved                                                                               |
+| **Last Updated**     | 2026-08-10                                                                             |
 
 ---
 

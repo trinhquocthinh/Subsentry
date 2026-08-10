@@ -2,7 +2,7 @@
 
 **Sơ Đồ Thực Thể Quan Hệ Chi Tiết (Entity-Relationship Diagram)** | _Database Schema Specification for Cloudflare D1 (SQLite) via Drizzle ORM_
 
-**Document Version:** 1.0 | **Status:** Approved
+**Document Version:** 1.2 | **Status:** Approved | **Last Updated:** 2026-08-10
 
 ---
 
